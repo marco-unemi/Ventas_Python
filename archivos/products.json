@@ -1,0 +1,8 @@
+[
+  { "id": 1, "descripcion": "Aceite", "precio": 8.5, "stock": 1000 },
+  { "id": 2, "descripcion": "Coca cola", "precio": 1.5, "stock": 1000 },
+  { "id": 3, "descripcion": "Mortadela", "precio": 2.0, "stock": 700 },
+  { "id": 4, "descripcion": "Uva", "precio": 2.0, "stock": 600 },
+  { "id": 5, "descripcion": "Arroz", "precio": 13.0, "stock": 200 },
+  { "id": 6, "descripcion": "Atun", "precio": 1.45, "stock": 20 }
+]
