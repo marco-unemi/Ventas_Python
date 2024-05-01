@@ -1,1 +1,32 @@
-[{"dni": "0914192144", "nombre": "Dayanna", "apellido": "Vera", "valor": 10000}, {"dni": "3216549870", "nombre": "Marco", "apellido": "Arteaga", "valor": 10000.0}, {"dni": "9876543210", "nombre": "Maria", "apellido": "Zambrano", "valor": 15000.0}, {"dni": "1234567891", "nombre": "Derek", "apellido": "Arteaga", "valor": 0.1}]
+[
+    {
+        "dni": "1309487872",
+        "nombre": "Teresa",
+        "apellido": "Zambrano",
+        "valor_credito": 20000,
+        "tipo_cliente": "Cliente VIP"
+    },
+    {
+        "dni": "1306176924",
+        "nombre": "Marco",
+        "apellido": "Moreira",
+        "valor_descuento": 0.1,
+        "card": "True",
+        "tipo_cliente": "Cliente REGULAR"
+    },
+    {
+        "dni": "0940310972",
+        "nombre": "Marco",
+        "apellido": "Arteaga",
+        "valor_credito": 16000,
+        "tipo_cliente": "Cliente VIP"
+    },
+    {
+        "dni": "0929097541",
+        "nombre": "Scarlet",
+        "apellido": "Arteaga",
+        "valor_descuento": 0.1,
+        "card": "True",
+        "tipo_cliente": "Cliente REGULAR"
+    }
+]

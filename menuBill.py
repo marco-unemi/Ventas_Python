@@ -1,6 +1,6 @@
 from components import Menu,Valida
-from utilities import borrarPantalla,gotoxy
-from utilities import reset_color,red_color,green_color,yellow_color,blue_color,purple_color,cyan_color
+from utilities import borrarPantalla, gotoxy, marco_lateral, mensaje, confirmacion, marco_inferior
+from utilities import reset_color,red_color,green_color,yellow_color,blue_color,purple_color,cyan_color,black_color, white_color
 from clsJson import JsonFile
 from company  import Company
 from customer import RegularClient, VipClient
@@ -18,88 +18,114 @@ class CrudClients(ICrud):
     def create(self):
         validar = Valida()
         print('\033c', end='')
-        gotoxy(2,1);print(green_color+"*"*90+reset_color)
-        gotoxy(30,2);print(cyan_color+"New client"+reset_color)
-        gotoxy(10,4);print(f'{green_color}Elija el tipo de cliente a registrar:{reset_color}')
-        gotoxy(10,6);print(f'{yellow_color}1. Regular client')
-        gotoxy(10,8);print(f'2. VIP client{reset_color}')
-        gotoxy(40,9);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
-        gotoxy(10,10);tipo_cliente = int(input(f'{green_color}Tipo cliente: {reset_color}'))
+        gotoxy(2,1);print(green_color+"*"*102+reset_color)
+        gotoxy(2,2);print(f"{green_color}*{reset_color}{' '*45}{cyan_color}NEW CLIENT{reset_color}{' '*45}{green_color}*{reset_color}") 
+        gotoxy(2,3);print(f"{green_color}*{'*'*100}*{reset_color}")       
+        content_width = 100
+        content_height = 30
+        marco_lateral(content_width, content_height)
+        marco_inferior(content_width, content_height)
+        
+        mensaje(content_width, 4, f'{green_color}Elija el tipo de cliente a registrar:{reset_color}')
+        gotoxy(40,6);print(f'{yellow_color}1. Regular client')
+        gotoxy(40,8);print(f'2. VIP client{reset_color}')
+        gotoxy(3,9);print('-'*100)
+        
+        gotoxy(80,10);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
+        gotoxy(40,10);tipo_cliente = int(input(f'{purple_color}Tipo cliente: {reset_color}'))
+        gotoxy(3,11);print('-'*100)
         
         if tipo_cliente == 0:
-            gotoxy(10,12);print(f"{red_color} Regresando al menu Clientes... {reset_color}")
-            time.sleep(2)  
-
+            gotoxy(10,13);print(f"{red_color} Regresando al menu Clientes... {reset_color}")
+            time.sleep(2)
+        elif tipo_cliente != 1 and tipo_cliente != 2:
+            self.create()
         elif tipo_cliente == 1:
-            gotoxy(10,9);print(' '*100)
-            gotoxy(10,12);print(purple_color+"DNI:"+reset_color)
-            dni = validar.solo_numeros("Error: Solo numeros", 15, 12)
+            gotoxy(80,10);print(' '*21)
+            while True:
+                gotoxy(10,13);dni = input(purple_color+"DNI: "+reset_color)
+                if validar.verificar_cedula(dni):
+                    break
+                else:
+                    gotoxy(15,13)
+                    print("                     ------><  | {} ".format("La cédula no es válida."))
+                    time.sleep(2) 
+                    gotoxy(15,13)
+                    print(' '*70)
             
             json_file = JsonFile(path+'/archivos/clients.json')
             
             client_existe = json_file.find("dni",dni)
             
             if not client_existe:
-                gotoxy(10, 14);first_name = input(purple_color+"First_name: "+reset_color).capitalize()
-                gotoxy(10, 16);last_name = input(purple_color+"Last_name: "+reset_color).capitalize()
-                gotoxy(10, 18);card = input(purple_color+"Card: "+reset_color).capitalize()
+                gotoxy(10, 15);first_name = input(purple_color+"First_name: "+reset_color).capitalize()
+                gotoxy(10, 17);last_name = input(purple_color+"Last_name: "+reset_color).capitalize()
+                gotoxy(10, 19);card = input(purple_color+"Card: "+reset_color).capitalize()
 
                 client = RegularClient(first_name, last_name, dni, card)
-
-                gotoxy(10, 20);procesar = input(red_color+"Esta seguro de grabar el Client(s/n): "+reset_color).lower()
-                gotoxy(52, 20);print(green_color+"✔"+reset_color)
+                
+                procesar = confirmacion(content_width, 22, "Esta seguro de guardar el cliente(s/n):")
                 
                 if procesar == "s":
                     clients = json_file.read()
                     data = client.getJson()
                     clients.append(data)
                     json_file.save(clients)
-                    gotoxy(30,23);print(yellow_color+"😊 Client Grabado satisfactoriamente 😊"+reset_color)
+                    mensaje(content_width, 25, "😊 Cliente Grabado satisfactoriamente 😊")
                 else:
-                    gotoxy(30,23);print(red_color+"🤣 Client Cancelado 🤣"+reset_color)    
+                    mensaje(content_width, 25, "🤣 Cliente Cancelado 🤣")
                 time.sleep(2)  
             else:
-                gotoxy(35, 14)
+                gotoxy(80,10);print(' '*21)
+                gotoxy(35, 16)
                 print(yellow_color+"Cliente ya existe!!"+reset_color) 
                 for i in range(3, 0, -1):
-                    gotoxy(20, 16);print(f"{green_color} Espere {i} segundos... {reset_color}", end="\r")
+                    gotoxy(20, 18);print(f"{green_color} Espere {i} segundos... {reset_color}", end="\r")
                     time.sleep(1)
                 self.create()
                 
         elif tipo_cliente == 2:
-            gotoxy(10,9);print(' '*100)
-            gotoxy(10,12);print(purple_color+"DNI:"+reset_color)
-            dni = validar.solo_numeros("Error: Solo numeros", 15, 12)
+            gotoxy(80,10);print(' '*21)
+            while True:
+                gotoxy(10,13);dni = input(purple_color+"DNI: "+reset_color)
+                if validar.verificar_cedula(dni):
+                    break
+                else:
+                    gotoxy(15,13)
+                    print("                     ------><  | {} ".format("La cédula no es válida."))
+                    time.sleep(2) 
+                    gotoxy(15,13)
+                    print(' '*70)
             
             json_file = JsonFile(path+'/archivos/clients.json')
             
             client_existe = json_file.find("dni",dni)
             
             if not client_existe:
-                gotoxy(10, 14);first_name = input(purple_color+"First_name: "+reset_color).capitalize()
-                gotoxy(10, 16);last_name = input(purple_color+"Last_name: "+reset_color).capitalize()
-                gotoxy(10, 18);valor = int(input(purple_color+"Valor: "+reset_color))
+                gotoxy(10, 15);first_name = input(purple_color+"First_name: "+reset_color).capitalize()
+                gotoxy(10, 17);last_name = input(purple_color+"Last_name: "+reset_color).capitalize()
+                gotoxy(10, 19);valor = int(input(purple_color+"Valor de crédito: "+reset_color))
                 client = VipClient(first_name, last_name, dni)
                 
                 client.limit = valor if valor else None
 
-                gotoxy(10, 20);procesar = input(red_color+"Esta seguro de grabar el Client(s/n): "+reset_color).lower()
-                gotoxy(52, 20);print(green_color+"✔"+reset_color)
+                procesar = confirmacion(content_width, 22, "Esta seguro de guardar el cliente(s/n):")
                 
                 if procesar == "s":
                     clients = json_file.read()
                     data = client.getJson()
                     clients.append(data)
                     json_file.save(clients)
-                    gotoxy(30,23);print(yellow_color+"😊 Client Grabado satisfactoriamente 😊"+reset_color)
+                    mensaje(content_width, 25, "😊 Cliente Grabado satisfactoriamente 😊")
                 else:
-                    gotoxy(30,23);print(red_color+"🤣 Client Cancelado 🤣"+reset_color)    
+                    mensaje(content_width, 25, "🤣 Cliente Cancelado 🤣")   
                 time.sleep(2)  
             else:
-                gotoxy(35, 14)
+                gotoxy(80,10);print(' '*21)
+                gotoxy(35, 16)
                 print(yellow_color+"Cliente ya existe!!"+reset_color) 
                 for i in range(3, 0, -1):
-                    gotoxy(20, 16);print(f"{green_color} Espere {i} segundos... {reset_color}", end="\r")
+                    gotoxy(20, 18);print(f"{green_color} Espere {i} segundos... {reset_color}", end="\r")
                     time.sleep(1)
                 self.create()
         
@@ -107,149 +133,309 @@ class CrudClients(ICrud):
     def update(self):
         validar = Valida()
         print('\033c', end='')
-        gotoxy(2,1);print(green_color+"*"*90+reset_color)
-        gotoxy(30,2);print(cyan_color+"Update client"+reset_color)
-        gotoxy(30,3);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
-        gotoxy(10,4);print(purple_color+"DNI:"+reset_color)
+        gotoxy(2,1);print(green_color+"*"*102+reset_color)
+        gotoxy(2,2);print(f"{green_color}*{reset_color}{' '*43}{cyan_color}UPDATE CLIENT{reset_color}{' '*44}{green_color}*{reset_color}") 
+        gotoxy(2,3);print(f"{green_color}*{'*'*100}*{reset_color}")       
+        content_width = 100
+        content_height = 20
+        marco_lateral(content_width, content_height)
+        marco_inferior(content_width, content_height)
+        
+        gotoxy(80,4);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
     
-        dni = validar.solo_numeros("Error: Solo numeros", 15, 4)
+        while True:
+            gotoxy(10,4);dni = input(purple_color+"DNI: "+reset_color)
+            if validar.verificar_cedula(dni):
+                break
+            else:
+                gotoxy(15,4)
+                print("                     ------><  | {} ".format("La cédula no es válida."))
+                time.sleep(2) 
+                gotoxy(15,4)
+                print(' '*60)
+                
         json_file = JsonFile(path+'/archivos/clients.json')
         client_existe = json_file.find("dni",dni)
-        
-        if int(dni) == 0:
+        client = client_existe
+        if dni == '0':
             gotoxy(15,6);print(f"{red_color} Regresando al menu Clientes... {reset_color}")
             time.sleep(2)  
         elif client_existe:
-            gotoxy(10,3);print(' '*100)
             client = client_existe[0]
-            
-            gotoxy(10,6);print(blue_color+f"Client: {client['nombre']} {client['apellido']}" +reset_color)
-            
-            gotoxy(10,8);new_dni = (input(cyan_color + "DNI: " + reset_color)) or client['dni']
-            gotoxy(10,10);new_first_name = input(purple_color+"First_name: "+reset_color).capitalize()  or client['nombre']
-            gotoxy(10,12);new_last_name = input(purple_color+"Last_name: "+reset_color).capitalize()  or client['apellido'] 
-            gotoxy(10,14);new_valor = input(purple_color+"Valor: "+reset_color)
-            if new_valor:
-                new_valor = float(round(new_valor,0))
-            else:
-                new_valor = float(client['valor'])
+            if client['tipo_cliente'] == 'Cliente REGULAR':
+                gotoxy(80,4);print(' '*21)            
+                gotoxy(40,4);print(f"{blue_color}Client:{reset_color} {white_color}{client['nombre']} {client['apellido']}{reset_color}")
+                gotoxy(3,6);print('-'*100)
                 
-            gotoxy(10, 16);print(red_color+"Esta seguro de grabar el Cliente(s/n):"+reset_color)
-            gotoxy(49, 16);procesar = input().lower()
-            gotoxy(52, 16);print(green_color+"✔"+reset_color)
-            
-            if procesar == "s":
-                new_values = {'dni': new_dni, 'nombre': new_first_name, 'apellido': new_last_name, 'valor': new_valor}
-                json_file.update('dni', dni, new_values)
-                gotoxy(30,18);print(yellow_color+"😊 Cliente actualizado satisfactoriamente 😊"+reset_color)
+                gotoxy(10,8);print(f'{cyan_color}DNI: {reset_color}') 
+                while True:
+                    gotoxy(10,8);new_dni = input(purple_color+"DNI: "+reset_color) or client['dni']
+                    if validar.verificar_cedula(new_dni):
+                        break
+                    else:
+                        gotoxy(15,8)
+                        print("                     ------><  | {} ".format("La cédula no es válida."))
+                        time.sleep(2) 
+                        gotoxy(15,8)
+                        print(' '*70)
+                gotoxy(10,10);new_first_name = input(purple_color+"First_name: "+reset_color).capitalize()  or client['nombre']
+                gotoxy(10,12);new_last_name = input(purple_color+"Last_name: "+reset_color).capitalize()  or client['apellido'] 
+                gotoxy(10,14);card = input(purple_color+"Card (True/False): "+reset_color).capitalize() or client['card']
+                valor = 0.10 if card else 0
+                procesar = confirmacion(content_width, 16, "Esta seguro de Actualizar el cliente(s/n):")
+                
+                if procesar == "s":
+                    new_values = {'dni': new_dni, 'nombre': new_first_name, 'apellido': new_last_name, 'valor_descuento': valor, 'card': card}
+                    json_file.update('dni', dni, new_values)
+                    mensaje(content_width, 18, "😊 Cliente actualizado satisfactoriamente 😊")
 
-            else:
-                gotoxy(30,18);print(red_color+"🤣 Actualización Cancelada 🤣"+reset_color)    
-            time.sleep(2)  
+                else:
+                    mensaje(content_width, 18, "🤣 Actualización Cancelada 🤣")
+                time.sleep(2)  
+            
+            elif client['tipo_cliente'] == 'Cliente VIP':
+                gotoxy(80,4);print(' '*21)            
+                gotoxy(40,4);print(f"{blue_color}Client:{reset_color} {white_color}{client['nombre']} {client['apellido']}{reset_color}")
+                gotoxy(3,6);print('-'*100)
                 
+                gotoxy(10,8);print(f'{cyan_color}DNI: {reset_color}') 
+                while True:
+                    gotoxy(10,8);new_dni = input(purple_color+"DNI: "+reset_color) or client['dni']
+                    if validar.verificar_cedula(new_dni):
+                        break
+                    else:
+                        gotoxy(15,8)
+                        print("                     ------><  | {} ".format("La cédula no es válida."))
+                        time.sleep(2) 
+                        gotoxy(15,8)
+                        print(' '*70)
+                gotoxy(10,10);new_first_name = input(purple_color+"First_name: "+reset_color).capitalize()  or client['nombre']
+                gotoxy(10,12);new_last_name = input(purple_color+"Last_name: "+reset_color).capitalize()  or client['apellido'] 
+                gotoxy(10,14);limit = int(input(purple_color+"Limit: "+reset_color)) or client['valor_credito']
+                new_limit = client['valor_credito'] if limit < 10000 or limit > 20000 else limit
+                
+                procesar = confirmacion(content_width, 16, "Esta seguro de Actualizar el cliente(s/n):")
+                
+                if procesar == "s":
+                    new_values = {'dni': new_dni, 'nombre': new_first_name, 'apellido': new_last_name, 'valor_credito': new_limit}
+                    json_file.update('dni', dni, new_values)
+                    mensaje(content_width, 18, "😊 Cliente actualizado satisfactoriamente 😊")
+
+                else:
+                    mensaje(content_width, 18, "🤣 Actualización Cancelada 🤣")
+                time.sleep(2)    
+            
         else: 
-            gotoxy(10,3);print(' '*100)
-            gotoxy(15,6);print(f'{yellow_color} Cliente no existe!! {reset_color}')
+            gotoxy(80,4);print(' '*21)
             clients = json_file.read()
-            gotoxy(15,8);print('Clientes disponibles')
-                        
-            fila = 10
+            
+            long = len(clients)
+            marco_lateral(content_width, content_height+long)
+            marco_inferior(content_width, content_height+long)
+            
+            mensaje(content_width, 5, 'Cliente no existe!!')
+            
+            gotoxy(2,7);print(f'{green_color}{"*"*102}{reset_color}')
+            
+            mensaje(content_width+10, 9, f'{white_color} Clientes disponibles {reset_color}') 
+            
+            gotoxy(3,10);print('-'*100)     
+             
+            gotoxy(35,12);print(f'{blue_color} Cliente {reset_color}')
+            gotoxy(60,12);print(f'{blue_color} Tipo de cliente {reset_color}')
+            fila = 14
             item = 1
             for cli in clients:
-                gotoxy(20,fila);print(f"{purple_color} {item}. {reset_color} {blue_color} {cli['nombre']} {cli['apellido']} {reset_color}")
+                gotoxy(20,fila);print(f"{purple_color} {item}. {reset_color}")
+                gotoxy(35,fila);print(f"{white_color} {cli['nombre']} {cli['apellido']} {reset_color}")
+                gotoxy(60,fila);print(f"{white_color} {cli['tipo_cliente']} {reset_color}")
                 fila += 1
-                item += 1
-                        
-            gotoxy(20,fila+2);x=input(f'{red_color} Presione una tecla para continuar... {reset_color}')
+                item += 1     
+            gotoxy(3,fila+1);print('-'*100)
+            gotoxy(20,fila+3);x=input(red_color+"presione una tecla para continuar..."+reset_color)
             self.update()
       
         
     def delete(self):
         validar = Valida()
         print('\033c', end='')
-        gotoxy(2,1);print(green_color+"*"*90+reset_color)
-        gotoxy(30,2);print(cyan_color+"Delete client"+reset_color)
-        gotoxy(30,3);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
-        gotoxy(10,4);print(purple_color+"DNI:"+reset_color)
-        dni = validar.solo_numeros("Error: Solo numeros", 15, 4)
+        gotoxy(2,1);print(green_color+"*"*102+reset_color)
+        gotoxy(2,2);print(f"{green_color}*{reset_color}{' '*43}{cyan_color}DELETE CLIENT{reset_color}{' '*44}{green_color}*{reset_color}") 
+        gotoxy(2,3);print(f"{green_color}*{'*'*100}*{reset_color}")       
+        content_width = 100
+        content_height = 20
+        marco_lateral(content_width, content_height)
+        marco_inferior(content_width, content_height)
+        
+        gotoxy(80,4);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
+    
+        while True:
+            gotoxy(10,4);dni = input(purple_color+"DNI: "+reset_color)
+            if validar.verificar_cedula(dni):
+                break
+            else:
+                gotoxy(15,4)
+                print("                     ------><  | {} ".format("La cédula no es válida."))
+                time.sleep(2) 
+                gotoxy(15,4)
+                print(' '*60)
+                
         json_file = JsonFile(path+'/archivos/clients.json')
         data = json_file.read()
         cliente_a_eliminar = json_file.find("dni",dni)
         
-        if int(dni) == 0:
+        if dni == '0':
             gotoxy(15,6);print(f"{red_color} Regresando al menu Clientes... {reset_color}")
             time.sleep(2)  
+            
         elif cliente_a_eliminar:
-            gotoxy(10,3);print(' '*100)
+            gotoxy(80,4);print(' '*21)
             client = cliente_a_eliminar[0]
             
             gotoxy(10,6);print(f"{blue_color} Client: {reset_color} {client['nombre']} {client['apellido']}")
-            gotoxy(10,8);print(f"{blue_color} Valor: {reset_color} {client['valor']}")
-
-            gotoxy(20, 10);procesar = input(f"{red_color}Esta seguro de ELIMINAR el Cliente (s/n): {reset_color}").lower()
-            gotoxy(65, 10);print(green_color+"✔"+reset_color)
+            if client['tipo_cliente'] == 'Cliente REGULAR':
+                gotoxy(10,8);print(f"{blue_color} Valor: {reset_color} {client['valor_descuento']}")
+                gotoxy(10,10);print(f"{blue_color} Tipo de cliente: {reset_color} {client['tipo_cliente']}")
+            else:
+                gotoxy(10,8);print(f"{blue_color} Valor: {reset_color} {client['valor_credito']}")
+                gotoxy(10,10);print(f"{blue_color} Tipo de cliente: {reset_color} {client['tipo_cliente']}")
+                
+            procesar = confirmacion(content_width, 12, f"Esta seguro de ELIMINAR el Cliente (s/n):")
 
             if procesar == "s":
                 data.remove(client)
                 json_file.save(data)
-                gotoxy(30,12);print(yellow_color+"😊 Cliente Eliminado satisfactoriamente 😊"+reset_color)
+                mensaje(content_width, 14, '😊 Cliente Eliminado satisfactoriamente 😊')
             else:
-                gotoxy(30,12);print(red_color+"🤣 Eliminación Cancelada 🤣"+reset_color)    
+                mensaje(content_width, 14, '🤣 Eliminación Cancelada 🤣')
             time.sleep(2)         
         else: 
-            gotoxy(10,3);print(' '*100)
-            gotoxy(15,6);print(yellow_color+"Cliente no existe!!"+reset_color)
+            gotoxy(80,4);print(' '*21)
             clients = json_file.read()
-            gotoxy(15,8);print('Clientes disponibles')        
             
-            fila = 10
+            long = len(clients)
+            marco_lateral(content_width, content_height+long)
+            marco_inferior(content_width, content_height+long)
+            
+            mensaje(content_width, 5, 'Cliente no existe!!')
+            
+            gotoxy(2,7);print(f'{green_color}{"*"*102}{reset_color}')
+            
+            mensaje(content_width+10, 9, f'{white_color} Clientes disponibles {reset_color}') 
+            
+            gotoxy(3,10);print('-'*100)     
+             
+            gotoxy(35,12);print(f'{blue_color} Cliente {reset_color}')
+            gotoxy(60,12);print(f'{blue_color} Tipo de cliente {reset_color}')
+            fila = 14
             item = 1
             for cli in clients:
-                gotoxy(20,fila);print(f"{purple_color} {item}. {reset_color} {blue_color} {cli['nombre']} {reset_color}")
+                gotoxy(20,fila);print(f"{purple_color} {item}. {reset_color}")
+                gotoxy(35,fila);print(f"{white_color} {cli['nombre']} {cli['apellido']} {reset_color}")
+                gotoxy(60,fila);print(f"{white_color} {cli['tipo_cliente']} {reset_color}")
                 fila += 1
                 item += 1     
-                
-            gotoxy(20,fila+2);x=input(red_color+"presione una tecla para continuar..."+reset_color)
+            gotoxy(3,fila+1);print('-'*100)
+            gotoxy(20,fila+3);x=input(red_color+"presione una tecla para continuar..."+reset_color)
             self.delete()
             
             
     def consult(self):
         validar = Valida()
         print('\033c', end='')
-        gotoxy(2,1);print(green_color+"*"*90+reset_color)
-        gotoxy(30,2);print(cyan_color+"Consulta client"+reset_color)
-        gotoxy(30,3);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
-        gotoxy(10,4);print(purple_color+"DNI:"+reset_color)
-        dni = validar.solo_numeros("Error: Solo numeros", 15, 4)
+        gotoxy(2,1);print(green_color+"*"*102+reset_color)
+        gotoxy(2,2);print(f"{green_color}*{reset_color}{' '*43}{cyan_color}CONSULT CLIENT{reset_color}{' '*43}{green_color}*{reset_color}")
+        gotoxy(2,3);print(f"{green_color}*{'*'*100}*{reset_color}")
+        content_width = 100
+        content_height = 25
+        marco_lateral(content_width, content_height)
+        marco_inferior(content_width, content_height)
+    
+        gotoxy(80,4);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
+    
+        while True:
+            gotoxy(10,4);dni = input(purple_color+"DNI: "+reset_color)
+            if validar.verificar_cedula(dni):
+                break
+            else:
+                gotoxy(15,4)
+                print("                     ------><  | {} ".format("La cédula no es válida."))
+                time.sleep(2) 
+                gotoxy(15,4)
+                print(' '*60)        
+
         json_file = JsonFile(path+'/archivos/clients.json')
         client_existe = json_file.find("dni",dni)
         
-        if int(dni) == 0:
+        if dni == '0':
             gotoxy(15,6);print(f"{red_color} Regresando al menu Clientes... {reset_color}")
             time.sleep(2) 
         elif client_existe:
-            gotoxy(10,3);print(' '*100)
+            gotoxy(80,4);print(' '*21)
             client = client_existe[0]
             
             gotoxy(10,6);print(f"{blue_color} DNI: {reset_color} {client['dni']}")
             gotoxy(10,8);print(f"{blue_color} Client: {reset_color} {client['nombre']} {client['apellido']}")
-            gotoxy(10,10);print(f"{blue_color} Valor: {reset_color} {client['valor']}")
-             
-            gotoxy(12,12);x=input(red_color+"presione una tecla para continuar..."+reset_color)    
+            if client['tipo_cliente'] == 'Cliente REGULAR':
+                gotoxy(10,10);print(f"{blue_color} Valor: {reset_color} {client['valor_descuento']}")
+                gotoxy(10,12);print(f"{blue_color} Tipo de cliente: {reset_color} {client['tipo_cliente']}")
+            else:
+                gotoxy(10,10);print(f"{blue_color} Valor: {reset_color} {client['valor_credito']}")
+                gotoxy(10,12);print(f"{blue_color} Tipo de cliente: {reset_color} {client['tipo_cliente']}")
+                             
+            gotoxy(12,14);x=input(red_color+"presione una tecla para continuar..."+reset_color)
+                
         else: 
-            gotoxy(10,3);print(' '*100)
-            gotoxy(15,6);print(f'{yellow_color} Cliente no existe!! {reset_color}')
+            gotoxy(80,4);print(' '*21)
             clients = json_file.read()
-            gotoxy(15,8);print('Clientes disponibles')
-                        
-            fila = 10
+            
+            long = len(clients)
+            marco_lateral(content_width, content_height+long+10)
+            marco_inferior(content_width, content_height+long+10)
+            
+            mensaje(content_width, 5, 'Cliente no existe!!')
+            
+            gotoxy(2,7);print(f'{green_color}{"*"*102}{reset_color}')
+            gotoxy(3,8);print(f'{"-"*100}')
+            
+            mensaje(content_width+10, 9, f'{white_color} Clientes disponibles: {reset_color}') 
+            
+            gotoxy(3,10);print('-'*100)     
+             
+            gotoxy(35,12);print(f'{blue_color} Cliente {reset_color}')
+            gotoxy(60,12);print(f'{blue_color} Tipo de cliente {reset_color}')
+            fila = 14
             item = 1
             for cli in clients:
-                gotoxy(18,fila);print(f"{purple_color} {item}. {reset_color} {blue_color} {cli['nombre']} {reset_color}")
+                gotoxy(20,fila);print(f"{purple_color} {item}. {reset_color}")
+                gotoxy(35,fila);print(f"{white_color} {cli['nombre']} {cli['apellido']} {reset_color}")
+                gotoxy(60,fila);print(f"{white_color} {cli['tipo_cliente']} {reset_color}")
                 fila += 1
-                item += 1
-                        
-            gotoxy(12,fila+2);x=input(red_color+"presione una tecla para continuar..."+reset_color)
+                item += 1     
+            gotoxy(3,fila);print(f'{"-"*100}')
+            
+            suma_clients_vip = reduce(lambda total, client: total + client["valor_credito"] if client['tipo_cliente'] == 'Cliente VIP' else total, clients,0)
+            suma_clients_regular = reduce(lambda total, client: total + client["valor_descuento"] if client['tipo_cliente'] == 'Cliente REGULAR' else total, clients,0)
+            totales_map = list(filter(lambda total: total != 0, map(lambda client: client["valor_credito"] if client['tipo_cliente'] == 'Cliente VIP' else 0, clients)))
+            filter_clientes_vip = list(filter(lambda client: client['tipo_cliente'] == 'Cliente VIP', clients))
+            filter_clientes_regular = list(filter(lambda client: client['tipo_cliente'] == 'Cliente REGULAR', clients))
+            total_clients_vip = sum(1 for client in filter_clientes_vip)
+            total_clients_regular = sum(1 for client in filter_clientes_regular)
+
+            max_client = max(totales_map)
+            min_client = min(totales_map)
+            tot_clients = round(sum(totales_map), 2)
+            
+            gotoxy(5,fila+2);print(f"{cyan_color} map Clients: {reset_color}{totales_map}")
+            gotoxy(5,fila+4);print(f"{cyan_color} max credito Client VIP: {reset_color}{max_client}")
+            gotoxy(5,fila+6);print(f"{cyan_color} min credito Client VIP: {reset_color}{min_client}")
+            gotoxy(5,fila+8);print(f"{cyan_color} sum creditos Clients VIP: {reset_color}{tot_clients}")
+            gotoxy(5,fila+10);print(f"{cyan_color} reduce Client VIP: {reset_color}{suma_clients_vip}")
+            gotoxy(5,fila+12);print(f"{cyan_color} reduce Client REGULAR: {reset_color}{suma_clients_regular}")
+            gotoxy(5,fila+14);print(f"{cyan_color} TOTAL DE CLIENTES VIP: {reset_color}{total_clients_vip}")
+            gotoxy(5,fila+16);print(f"{cyan_color} TOTAL DE CLIENTES REGULARES: {reset_color}{total_clients_regular}")
+            
+            gotoxy(20,fila+18);x=input(red_color+"presione una tecla para continuar..."+reset_color)
             self.consult()
             
 
@@ -257,29 +443,33 @@ class CrudProducts(ICrud):
     def create(self):
         validar = Valida()
         print('\033c', end='')
-        gotoxy(2,1);print(green_color+"*"*90+reset_color)
-        gotoxy(30,2);print(cyan_color+"New product"+reset_color)
-        gotoxy(50,4);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
-        gotoxy(10,4);print(purple_color+"Description:"+reset_color)
-        descripcion = validar.solo_letras("Error: Solo letras", 23, 4)
+        gotoxy(2,1);print(green_color+"*"*102+reset_color)
+        gotoxy(2,2);print(f"{green_color}*{reset_color}{' '*45}{cyan_color}NEW PRODUCT{reset_color}{' '*44}{green_color}*{reset_color}") 
+        gotoxy(2,3);print(f"{green_color}*{'*'*100}*{reset_color}")       
+        content_width = 100
+        content_height = 12
+        marco_lateral(content_width, content_height)
+        marco_inferior(content_width, content_height)
+        
+        gotoxy(80,5);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
+        gotoxy(10,5);print(purple_color+"Description:"+reset_color)
+        descripcion = validar.solo_letras("Error: Solo letras", 23, 5)
         json_file = JsonFile(path+'/archivos/products.json')
         product = json_file.find("descripcion",descripcion)
       
         if descripcion == 0:
-            gotoxy(15,6);print(f"{red_color} Regresando al menu Productos... {reset_color}")
+            gotoxy(15,7);print(f"{red_color} Regresando al menu Productos... {reset_color}")
             time.sleep(2)
         elif not product:
-            gotoxy(50,4);print(' '*100)
-            gotoxy(10, 6);print(purple_color+"Price: "+reset_color)
-            gotoxy(17, 6);price = float(input())
-            gotoxy(10, 8);print(purple_color+"Stock: "+reset_color)
-            gotoxy(17, 8);stock = int(input())
+            gotoxy(80,5);print(' '*21)
+            gotoxy(10, 7);print(purple_color+"Price: "+reset_color)
+            price = validar.solo_decimales("Error: Solo decimales", 17, 7)
+            gotoxy(10, 9);print(purple_color+"Stock: "+reset_color)
+            stock = validar.solo_numeros("Error: Solo numeros", 17, 9)
 
             product = Product(None, descripcion, price, stock)
 
-            gotoxy(10, 10);print(red_color+"Esta seguro de grabar el producto(s/n):"+reset_color)
-            gotoxy(50, 10);procesar = input().lower()
-            gotoxy(52, 10);print(green_color+"✔"+reset_color)
+            procesar = confirmacion(content_width, 11, "Esta seguro de grabar el producto(s/n):")
             
             if procesar == "s":
                 products = json_file.read()
@@ -288,156 +478,226 @@ class CrudProducts(ICrud):
                 product_data["id"] = last_id
                 products.append(product_data)
                 json_file.save(products)
-                gotoxy(30,13);print(yellow_color+"😊 Producto Grabado satisfactoriamente 😊"+reset_color)
-                
+                mensaje(content_width, 14, "😊 Producto Grabado satisfactoriamente 😊")
+
             else:
-                gotoxy(30,13);print(red_color+"🤣 Producto Cancelado 🤣"+reset_color)    
+                mensaje(content_width, 14, "🤣 Producto Cancelado 🤣")    
             time.sleep(2)  
         else:
-            gotoxy(50,4);print(' '*100)
-            gotoxy(35, 6);print(yellow_color+"Producto ya existe!!"+reset_color) 
+            gotoxy(80,5);print(' '*21)
+            gotoxy(35, 8);print(yellow_color+"Producto ya existe!!"+reset_color) 
             for i in range(3, 0, -1):
-                gotoxy(20, 8);print(f"{green_color} Espere {i} segundos... {reset_color}", end="\r")
+                gotoxy(20, 12);print(f"{green_color} Espere {i} segundos... {reset_color}", end="\r")
                 time.sleep(1)
             self.create() 
 
 
     def update(self):
+        validar = Valida()
         print('\033c', end='')
-        gotoxy(2,1);print(green_color+"█"*90)
-        gotoxy(2,2);print("██"+" "*34+"Actualizar Producto"+" "*33+"██" +reset_color)
-        gotoxy(50,4);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
-        gotoxy(2,4);product_id = int(input(purple_color+"Ingrese ID del Producto: "+reset_color))
+        gotoxy(2,1);print(green_color+"*"*102)
+        gotoxy(2,2);print(f"*{' '*41}{cyan_color}ACTUALIZAR PRODUCTO{reset_color}{' '*40}{green_color}*{reset_color}")
+        gotoxy(2,3);print(f"{green_color}*{'*'*100}*{reset_color}")  
+        content_width = 100
+        content_height = 20
+        marco_lateral(content_width, content_height)
+        marco_inferior(content_width, content_height)
+        
+        gotoxy(80,5);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
+        gotoxy(10,5);print(purple_color+"Ingrese ID del Producto: "+reset_color)
+        
+        product_id = validar.solo_numeros("Error: Solo numeros",35,5)
         json_file = JsonFile(path+'/archivos/products.json')
         product = json_file.find("id",product_id )
         
-        fila = 10
         if product_id == 0:
-            gotoxy(15,6);print(f"{red_color} Regresando al menu Productos... {reset_color}")
+            gotoxy(15,8);print(f"{red_color} Regresando al menu Productos... {reset_color}")
             time.sleep(2)
         elif product:
-            gotoxy(50,4);print(' '*100)
+            gotoxy(80,5);print(' '*21)
             product = product[0]
             
-            gotoxy(2,6);print(blue_color+f"Producto: {product['id']}" +reset_color)
+            gotoxy(10,7);print(blue_color+f"Producto: {product['id']}" +reset_color)
             
-            gotoxy(2,8);new_description = input(cyan_color + "Descripcion: " + reset_color)  or product['descripcion']
-            gotoxy(2,10);new_price = input(cyan_color + "Precio: " +reset_color)  or product['precio']
-            gotoxy(2,12);new_stock = input(cyan_color + "Stock: " +reset_color)  or product['stock']      
+            gotoxy(10,9);new_description = input(cyan_color + "Descripcion: " + reset_color)  or product['descripcion']
+            gotoxy(10,11);new_price = input(cyan_color + "Precio: " +reset_color)  or product['precio']
+            gotoxy(10,13);new_stock = input(cyan_color + "Stock: " +reset_color)  or product['stock']      
             
-            gotoxy(10, 15);print(red_color+"Esta seguro de grabar la actualizacion del producto(s/n):"+reset_color)
-            gotoxy(68, 15);procesar = input().lower()
-            gotoxy(70, 15);print(green_color+"✔"+reset_color)
+            procesar = confirmacion(content_width, 16, "Esta seguro de grabar el producto(s/n):")
             
             if procesar == "s":
                 new_values = {'descripcion': new_description.capitalize(), 'precio': float(new_price), 'stock': int(new_stock)}
                 json_file.update('id', product_id, new_values)
-                gotoxy(30,18);print(yellow_color+"😊 Producto Actualizado satisfactoriamente 😊"+reset_color)
+                mensaje(content_width, 19, "😊 Producto Actualizado satisfactoriamente 😊")
             else:
-                gotoxy(30,18);print(red_color+"Actualizacion Cancelada!!"+reset_color)
-                    
+                mensaje(content_width, 19, "Actualizacion Cancelada!!")
             time.sleep(2)  
             
         else: 
-            gotoxy(50,4);print(' '*100)
-            gotoxy(15,6);print(yellow_color+"Producto no existe!!"+reset_color)
+            gotoxy(80,5);print(' '*21)
+            gotoxy(2,29);print(' '*102)
             productos = json_file.read()
-            gotoxy(15,8);print('Productos disponibles')
+            total_id = len(productos)
+            
+            marco_lateral(content_width, content_height+total_id-10)
+            marco_inferior(content_width, content_height+total_id-10)
+            mensaje(content_width, 5, "Producto no existe!!")
+            gotoxy(2,7);print(green_color+'*'*102+reset_color)
+            mensaje(content_width, 9, white_color+'Productos disponibles'+reset_color)
+            gotoxy(3,11);print('-'*100)
+            
+            fila = 13
             for prod in productos:
-                gotoxy(20,fila);print(f"{purple_color} {prod['id']}. {reset_color} {blue_color} {prod['descripcion']} {reset_color}")
+                gotoxy(20,fila);print(f"{purple_color} {prod['id']}. {reset_color}")
+                gotoxy(30,fila);print(f"{blue_color} {prod['descripcion']} {reset_color}")
                 fila += 1
-                        
-            gotoxy(20,fila+2);x=input(red_color+"presione una tecla para continuar..."+reset_color)
+            gotoxy(3,fila+1);print('-'*100)
+            
+            gotoxy(20,fila+3);x=input(red_color+"presione una tecla para continuar..."+reset_color)
             self.update()
     
     
     def delete(self):
+        validar = Valida()
         print('\033c', end='')
-        gotoxy(2,1);print(green_color+"█"*90)
-        gotoxy(2,2);print("██"+" "*34+"Eliminar Producto"+" "*35+"██" +reset_color)
-        gotoxy(50,4);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
-        gotoxy(2,4);product_id = int(input(purple_color+"Ingrese ID del Producto: "+reset_color))
+        gotoxy(2,1);print(green_color+"*"*102)
+        gotoxy(2,2);print(f"*{' '*41}{cyan_color}ELIMINAR PRODUCTO{reset_color}{' '*42}{green_color}*{reset_color}")
+        gotoxy(2,3);print(f"{green_color}*{'*'*100}*{reset_color}")  
+        content_width = 100
+        content_height = 20
+
+        marco_lateral(content_width, content_height)
+        marco_inferior(content_width, content_height)
+        
+        gotoxy(80,5);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
+        gotoxy(10,5);print(purple_color+"Ingrese ID del Producto: "+reset_color)
+        product_id = validar.solo_numeros("Error: Solo numeros",35,5)
+        
         json_file = JsonFile(path+'/archivos/products.json')
         data = json_file.read()
-        
         producto_a_eliminar = json_file.find("id",product_id )
         
         fila = 10
         if product_id == 0:
-            gotoxy(15,6);print(f"{red_color} Regresando al menu Productos... {reset_color}")
+            gotoxy(15,8);print(f"{red_color} Regresando al menu Productos... {reset_color}")
             time.sleep(2)
         elif producto_a_eliminar:
-            gotoxy(50,4);print(' '*100)
+            gotoxy(80,5);print(' '*21)
             product = producto_a_eliminar[0]
             
-            gotoxy(2,6);print(f"{cyan_color} Producto: {reset_color} {product['id']}")
-            gotoxy(2,8);print(f"{cyan_color} Descripcion: {reset_color} {product['descripcion']}")
-            gotoxy(2,10);print(f"{cyan_color} Precio: {reset_color} {product['precio']}")
-            gotoxy(2,12);print(f"{cyan_color} Stock: {reset_color} {product['stock']}")      
+            gotoxy(10,7);print(f"{cyan_color} Producto: {reset_color} {product['id']}")
+            gotoxy(10,9);print(f"{cyan_color} Descripcion: {reset_color} {product['descripcion']}")
+            gotoxy(10,11);print(f"{cyan_color} Precio: {reset_color} {product['precio']}")
+            gotoxy(10,13);print(f"{cyan_color} Stock: {reset_color} {product['stock']}")      
             
-            gotoxy(10, 15);print(red_color+"Esta seguro de ELIMINAR el producto(s/n):"+reset_color)
-            gotoxy(52, 15);procesar = input().lower()
-            gotoxy(54, 15);print(green_color+"✔"+reset_color)
+            procesar = confirmacion(content_width, 16, "Esta seguro de Eliminar el producto(s/n):")
             
-
             if procesar == "s":
                 data.remove(product)
                 json_file.save(data)
-                
-                gotoxy(20,18);print(yellow_color+"😊 Producto Eliminado satisfactoriamente 😊"+reset_color)
-
+                mensaje(content_width, 19, "😊 Producto Eliminado satisfactoriamente 😊")
             else:
-                gotoxy(20,18);print(yellow_color+"Eliminacion Cancelada!!"+reset_color)
-                    
+                mensaje(content_width, 19, "Actualizacion Cancelada!!")
             time.sleep(2)  
             
         else: 
-            gotoxy(50,4);print(' '*100)
-            gotoxy(15,6);print(yellow_color+"Producto no existe!!"+reset_color)
-            productos = json_file.read()
-            gotoxy(15,8);print('Productos disponibles')
-            for prod in productos:
+            gotoxy(80,5);print(' '*21)
+            long = len(data)
+            
+            marco_lateral(content_width, content_height+long)
+            marco_inferior(content_width, content_height+long)
+            gotoxy(40,2);print(yellow_color+"Producto no existe!!"+reset_color)
+            
+            gotoxy(30,5);print('Productos disponibles')
+            fila = 8
+            for prod in data:
                 gotoxy(20,fila);print(f"{purple_color} {prod['id']}. {reset_color} {blue_color} {prod['descripcion']} {reset_color}")
                 fila += 1
-                        
+            
+            
             gotoxy(20,fila+2);x=input(red_color+"presione una tecla para continuar..."+reset_color)
             self.delete()
     
     
     def consult(self):
+        validar = Valida()
         print('\033c', end='')
-        gotoxy(2,1);print(green_color+"█"*90)
-        gotoxy(2,2);print("██"+" "*34+"Consulta de Producto"+" "*32+"██" +reset_color)
-        gotoxy(50,4);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
-        gotoxy(2,4);product_id = int(input(purple_color+"Ingrese ID del Producto: "+reset_color))
+        gotoxy(2,1);print(green_color+"*"*102)
+        gotoxy(2,2);print(f"*{' '*41}{cyan_color}CONSULTAR PRODUCTO{reset_color}{' '*41}{green_color}*{reset_color}")
+        gotoxy(2,3);print(f"{green_color}{'*'*102}{reset_color}")  
+        content_width = 100
+        content_height = 25
+
+        marco_lateral(content_width, content_height)
+        marco_inferior(content_width, content_height)
+        
+        gotoxy(80,5);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
+        gotoxy(10,5);print(purple_color+"Ingrese ID del Producto: "+reset_color)
+        product_id = validar.solo_numeros("Error: Solo numeros",35,5)
+        
         json_file = JsonFile(path+'/archivos/products.json')
         product = json_file.find("id",product_id)
         
         fila = 10
         if product_id == 0:
-            gotoxy(15,6);print(f"{red_color} Regresando al menu Productos... {reset_color}")
+            gotoxy(15,8);print(f"{red_color} Regresando al menu Productos... {reset_color}")
             time.sleep(2)
+            
         elif product:
-            gotoxy(50,4);print(' '*100)
+            gotoxy(80,5);print(' '*21)
             producto = product[0]
             
-            gotoxy(4,6);print(yellow_color+f"Producto:{reset_color} {producto['id']}")
-            gotoxy(4,8);print(cyan_color+f"Descripcion:{reset_color} {producto['descripcion']}")
-            gotoxy(4,10);print(cyan_color+f"Precio:{reset_color} {producto['precio']}")
-            gotoxy(4,12);print(cyan_color+f"Stock:{reset_color} {producto['stock']}")  
+            gotoxy(3,7);print('-'*100) 
+            gotoxy(20,8);print(cyan_color+f"ID:{reset_color}")
+            gotoxy(35,8);print(cyan_color+f"Descripcion:{reset_color}")
+            gotoxy(60,8);print(cyan_color+f"Precio:{reset_color}")
+            gotoxy(80,8);print(cyan_color+f"Stock:{reset_color}") 
+            gotoxy(3,9);print('-'*100)
+            gotoxy(20,10);print(f"{white_color}{producto['id']}")  
+            gotoxy(35,10);print(f"{producto['descripcion']}")  
+            gotoxy(60,10);print(f"{producto['precio']}")  
+            gotoxy(80,10);print(f"{producto['stock']} {reset_color}")  
+            gotoxy(3,11);print('-'*100)
             
-            gotoxy(4,15);x=input(red_color+"presione una tecla para continuar..."+reset_color)             
-        else: 
-            gotoxy(50,4);print(' '*100)
-            gotoxy(15,6);print(yellow_color+"Producto no existe!!"+reset_color)
+            gotoxy(2,13);print(green_color+'*'*102+reset_color)  
             productos = json_file.read()
-            gotoxy(15,8);print('Productos disponibles')
+            suma = reduce(lambda total, product: round(total+ product["precio"],2), productos,0)
+            totales_map = list(map(lambda product: product["precio"], productos))
+            max_product = max(totales_map)
+            min_product = min(totales_map)
+            tot_products = round(sum(totales_map), 2)
+            gotoxy(5,15);print(f"{cyan_color} map Precio Productos: {reset_color}{totales_map}")
+            gotoxy(5,17);print(f"{cyan_color} max Precio Producto: {reset_color}{max_product}")
+            gotoxy(5,19);print(f"{cyan_color} min Precio Producto: {reset_color}{min_product}")
+            gotoxy(5,21);print(f"{cyan_color} sum Precio Producto: {reset_color}{tot_products}")
+            gotoxy(5,23);print(f"{cyan_color} reduce Precio Producto: {reset_color}{suma}")
+            
+            gotoxy(10,26);x=input(red_color+"presione una tecla para continuar..."+reset_color)
+                         
+        else:  
+            gotoxy(80,5);print(' '*21)
+            productos = json_file.read()
+            long = len(productos)
+
+            marco_lateral(content_width, content_height+long)
+            marco_inferior(content_width, content_height+long)
+            mensaje(content_width, 1, 'Producto no existe!!')
+            mensaje(content_width, 3, 'Productos disponibles', white_color)
+            gotoxy(3,4);print('-'*100)
+            gotoxy(20,5);print(f'{cyan_color}NO.          Descripción          Precio          Stock{reset_color}')
+            gotoxy(3,6);print('-'*100)
+            fila = 8
             for prod in productos:
-                gotoxy(20,fila);print(f"{purple_color} {prod['id']}. {reset_color} {blue_color} {prod['descripcion']} {reset_color}")
+                gotoxy(20,fila);print(f"{purple_color}{prod['id']}{reset_color}")
+                gotoxy(33,fila);print(f"{purple_color}{prod['descripcion']}{reset_color}")
+                gotoxy(54,fila);print(f"{purple_color}{prod['precio']}{reset_color}")
+                gotoxy(70,fila);print(f"{purple_color}{prod['stock']}{reset_color}")
                 fila += 1
-                        
+            fila +=1
+            gotoxy(3,fila);print('-'*100)  
+            
             gotoxy(20,fila+2);x=input(red_color+"presione una tecla para continuar..."+reset_color)
-            self.consult()
+            self.consult()            
 
 
 class CrudSales(ICrud):
@@ -445,71 +705,95 @@ class CrudSales(ICrud):
         # cabecera de la venta
         validar = Valida()
         borrarPantalla()
-        print('\033c', end='')
-        gotoxy(2,1);print(green_color+"*"*90+reset_color)
-        gotoxy(30,2);print(blue_color+"Registro de Venta")
-        gotoxy(17,3);print(blue_color+Company.get_business_name())
-        gotoxy(5,4);print(f"Factura#:F0999999 {' '*3} Fecha:{datetime.datetime.now()}")
-        gotoxy(66,4);print("Subtotal:")
-        gotoxy(66,5);print("Decuento:")
-        gotoxy(66,6);print("Iva     :")
-        gotoxy(66,7);print("Total   :")
-        gotoxy(35,6);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
-        gotoxy(15,6);print("Cedula:")
-        dni=validar.solo_numeros("Error: Solo numeros",23,6)
+        print('\033c', end='')        
+        gotoxy(2,1);print(green_color+"*"*102+reset_color)
+        gotoxy(2,2);print(f"{green_color}*{reset_color}{' '*41}{cyan_color}NEW SALES REGISTER{reset_color}{' '*41}{green_color}*{reset_color}") 
+        gotoxy(2,3);print(green_color+"*"*102+reset_color) 
+        content_width = 100
+        content_height = 20
+        marco_lateral(content_width, content_height)
+        marco_inferior(content_width, content_height)
         
-        if int(dni) == 0:
-            gotoxy(15,8);print(f"{red_color} Regresando al menu Productos... {reset_color}")
+        company = Company()
+        gotoxy(3,4);print('-'*100)
+        gotoxy(20,5);print(f'{cyan_color}Empresa:{reset_color} {white_color}{company.business_name}{reset_color}')
+        gotoxy(60,5);print(f'{cyan_color}Ruc:{reset_color} {white_color}{company.ruc}{reset_color}')
+        gotoxy(3,6);print('-'*100)
+        gotoxy(20,7);print(f"{cyan_color}Factura#:{reset_color} {white_color}F0999999{reset_color}")
+        gotoxy(60,7);print(f"{cyan_color}Fecha:{reset_color} {white_color}{datetime.datetime.now()}{reset_color}")
+        gotoxy(3,8);print('-'*100)
+        
+        gotoxy(66,20);print("Subtotal:")
+        gotoxy(66,21);print("Decuento:")
+        gotoxy(66,22);print("Iva     :")
+        gotoxy(66,23);print("Total   :")
+        
+        gotoxy(80,9);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
+        
+        while True:
+            gotoxy(20,9);dni = input(cyan_color+"Cedula: "+reset_color + white_color)
+            if validar.verificar_cedula(dni):
+                break
+            else:
+                gotoxy(30,9)
+                print("          ------>< | {}".format("La cédula no es válida."))
+                time.sleep(2) 
+                gotoxy(20,9)
+                print(' '*44)
+        
+        if dni == '0':
+            gotoxy(15,9);print(f"{red_color} Regresando al menu Productos... {reset_color}")
             time.sleep(2)
         else:
-            gotoxy(35,6);print(' '*100)
+            gotoxy(80,9);print(' '*21)
             json_file = JsonFile(path+'/archivos/clients.json')
             client = json_file.find("dni",dni)
             if not client:
-                gotoxy(35,6);print("Cliente no existe")
+                mensaje(content_width, 12, "Cliente no existe!!")
                 return
             client = client[0]
             cli = RegularClient(client["nombre"],client["apellido"], client["dni"], card=True) 
             sale = Sale(cli)
-            gotoxy(35,6);print(cli.fullName())
-            gotoxy(2,8);print(green_color+"*"*90+reset_color) 
-            gotoxy(5,9);print(purple_color+"Linea") 
-            gotoxy(12,9);print("Id_Articulo") 
-            gotoxy(24,9);print("Descripcion") 
-            gotoxy(38,9);print("Precio") 
-            gotoxy(48,9);print("Cantidad") 
-            gotoxy(58,9);print("Subtotal") 
-            gotoxy(70,9);print("n->Terminar Venta)"+reset_color)
+            gotoxy(60,9);print(f'{cyan_color}Cliente: {white_color}{cli.fullName()}{reset_color}')
+            gotoxy(3,10);print("-"*100) 
+            gotoxy(6,11);print(purple_color+"Linea") 
+            gotoxy(15,11);print("Id_Articulo") 
+            gotoxy(30,11);print("Descripcion") 
+            gotoxy(48,11);print("Precio") 
+            gotoxy(58,11);print("Cantidad") 
+            gotoxy(70,11);print("Subtotal") 
+            gotoxy(82,11);print("n->Terminar Venta)"+reset_color)
+            gotoxy(3,12);print("-"*100)
             # detalle de la venta
             follow ="s"
             line=1
             while follow.lower()=="s":
-                gotoxy(7,9+line);print(line)
-                gotoxy(15,9+line);
-                id=int(validar.solo_numeros("Error: Solo numeros",15,9+line))
+                gotoxy(7,12+line);print(line)
+                gotoxy(15,12+line);
+                id=int(validar.solo_numeros("Error: Solo numeros",15,12+line))
                 json_file = JsonFile(path+'/archivos/products.json')
                 prods = json_file.find("id",id)
                 if not prods:
-                    gotoxy(24,9+line);print("Producto no existe")
+                    gotoxy(24,12+line);print("Producto no existe")
                     time.sleep(1)
-                    gotoxy(24,9+line);print(" "*20)
+                    gotoxy(24,12+line);print(" "*20)
                 else:    
                     prods = prods[0]
                     product = Product(prods["id"],prods["descripcion"],prods["precio"],prods["stock"])
-                    gotoxy(24,9+line);print(product.descrip)
-                    gotoxy(38,9+line);print(product.preci)
-                    gotoxy(49,9+line);qyt=int(validar.solo_numeros("Error:Solo numeros",49,9+line))
-                    gotoxy(59,9+line);print(product.preci*qyt)
+                    gotoxy(30,12+line);print(product.descrip)
+                    gotoxy(48,12+line);print(product.preci)
+                    gotoxy(58,12+line);qyt=int(validar.solo_numeros("Error:Solo numeros",58,12+line))
+                    gotoxy(70,12+line);print(product.preci*qyt)
                     sale.add_detail(product,qyt)
-                    gotoxy(76,4);print(round(sale.subtotal,2))
-                    gotoxy(76,5);print(round(sale.discount,2))
-                    gotoxy(76,6);print(round(sale.iva,2))
-                    gotoxy(76,7);print(round(sale.total,2))
-                    gotoxy(74,9+line);follow=input() or "s"  
-                    gotoxy(76,9+line);print(green_color+"✔"+reset_color)  
+                    gotoxy(76,20);print(round(sale.subtotal,2))
+                    gotoxy(76,21);print(round(sale.discount,2))
+                    gotoxy(76,22);print(round(sale.iva,2))
+                    gotoxy(76,23);print(round(sale.total,2))
+                    gotoxy(90,12+line);follow=input() or "s"  
+                    gotoxy(90,12+line);print(green_color+"✔"+reset_color)  
                     line += 1
-            gotoxy(15,9+line);print(red_color+"Esta seguro de grabar la venta(s/n):")
-            gotoxy(54,9+line);procesar = input().lower()
+            gotoxy(15,12+line);print(red_color+"Esta seguro de grabar la venta(s/n):")
+            gotoxy(54,12+line);procesar = input().lower()
             if procesar == "s":
                 json_file = JsonFile(path+'/archivos/invoices.json')
                 invoices = json_file.read()
@@ -661,70 +945,115 @@ class CrudSales(ICrud):
             gotoxy(4,fila+2);x=input(red_color+"presione una tecla para continuar..."+reset_color)
             self.delete()
     
-    def consult(self):
+    def consult(self):        
+        validar = Valida()
         print('\033c', end='')
-        gotoxy(2,1);print(green_color+"█"*90)
-        gotoxy(2,2);print("██"+" "*34+"Consulta de Venta"+" "*35+"██" + reset_color)
-        gotoxy(65,4);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
-        gotoxy(2,4);id_fact= int(input(f"{purple_color} Ingrese el numero de la Factura: {reset_color}"))
+        gotoxy(2,1);print(green_color+"*"*102)
+        gotoxy(2,2);print(f"*{' '*41}{cyan_color}CONSULTA DE VENTA{reset_color}{' '*42}{green_color}*{reset_color}")
+        gotoxy(2,3);print(f"{green_color}*{'*'*100}*{reset_color}")  
+        content_width = 100
+        content_height = 38
+        marco_lateral(content_width, content_height)
+        
+        gotoxy(80,4);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
+        gotoxy(10,4);print(purple_color+"Ingrese el NO. de la Factura: "+reset_color)
+        id_fact = validar.solo_numeros("Error: Solo numeros",40,4)
+        
         json_file = JsonFile(path+'/archivos/invoices.json')
         invoice = json_file.find("factura",id_fact)
-        gotoxy(2,4);print(' '*100)
+        invoices = json_file.read()
+
+        
         if id_fact == 0:
             gotoxy(15,8);print(f"{red_color} Regresando al menu Productos... {reset_color}")
             time.sleep(2)
         elif invoice:
-            gotoxy(65,4);print(' '*100)
+            gotoxy(80,4);print(' '*21)
+            gotoxy(2,5);print(f"{green_color}*{'*'*100}*{reset_color}")
             invoice = invoice[0]
             company = Company()
-            gotoxy(2,4);print('-'*100)
-            gotoxy(20,5);print(f'{cyan_color} Empresa: {reset_color} {company.business_name}')
-            gotoxy(60,5);print(f'{cyan_color} Ruc: {reset_color} {company.ruc}')
-            gotoxy(2,6);print('-'*100)
-            gotoxy(10,7);print(f"{cyan_color} Factura: #{reset_color} {invoice['factura']}")
-            gotoxy(35,7);print(f"{cyan_color} Fecha: {reset_color} {invoice['Fecha']}")
-            gotoxy(60,7);print(f"{cyan_color} Cliente: {reset_color} {invoice['cliente']}")
-            gotoxy(2,8);print('-'*100)
-            gotoxy(10,9);print(f"{cyan_color} Detalle: {reset_color}")
+            mensaje(content_width, 6, f"Invoice #{invoice['factura']}", white_color)
+            gotoxy(3,7);print('-'*100)
+            gotoxy(20,8);print(f'{cyan_color} Empresa: {reset_color} {company.business_name}')
+            gotoxy(60,8);print(f'{cyan_color} Ruc: {reset_color} {company.ruc}')
+            gotoxy(3,9);print('-'*100)
+            gotoxy(10,10);print(f"{cyan_color} Factura: #{reset_color} {invoice['factura']}")
+            gotoxy(35,10);print(f"{cyan_color} Fecha: {reset_color} {invoice['Fecha']}")
+            gotoxy(60,10);print(f"{cyan_color} Cliente: {reset_color} {invoice['cliente']}")
+            gotoxy(3,11);print('-'*100)
+            gotoxy(10,12);print(f"{cyan_color} Detalle: {reset_color}")
             
-            fila = 10
+            fila = 13
             for detail in invoice['detalle']:
                 gotoxy(20,fila);print(f'{cyan_color} Producto: {reset_color} {detail["producto"]}')
                 gotoxy(20+30,fila);print(f'{cyan_color} Precio: {reset_color} {detail["precio"]}')
                 gotoxy(20+55,fila);print(f'{cyan_color} Cantidad: {reset_color} {detail["cantidad"]}')
                 fila += 1
                 
-            gotoxy(2,fila);print('-'*100)
+            gotoxy(3,fila);print('-'*100)
             gotoxy(60,fila+1);print(f"{cyan_color} Subtotal:  {reset_color} {invoice['subtotal']}")      
             gotoxy(60,fila+2);print(f"{cyan_color} Descuento: {reset_color} {invoice['descuento']}")      
             gotoxy(60,fila+3);print(f"{cyan_color} IVA:       {reset_color} {invoice['iva']}")      
             gotoxy(60,fila+4);print(f"{cyan_color} Total:     {reset_color} {invoice['total']}")
-            gotoxy(2,fila+5);print('-'*100)
+            gotoxy(3,fila+5);print('-'*100)
+            gotoxy(2,fila+6);print(f"{green_color}*{'*'*100}*{reset_color}")
+            # Obtener el cliente de la factura consultada
+            cliente_factura = invoice['cliente']
+            mensaje(content_width+10, fila+7, f'Facturas del cliente: {white_color}{cliente_factura}{reset_color}')
                 
-            gotoxy(10,fila+7);x=input(red_color+"presione una tecla para continuar..."+reset_color)  
-             
-        else: 
-            gotoxy(65,4);print(' '*100)   
-            invoices = json_file.read()
-            print("Consulta de Facturas")
-            for fac in invoices:
-                print(f"{fac['factura']}   {fac['Fecha']}   {fac['cliente']}   {fac['total']}")
+            total_fact_client = list(filter(lambda facturas_cliente: facturas_cliente['cliente'] == invoice['cliente'], invoices))
+            suma = reduce(lambda total, invoice: round(total+ invoice["total"],2), total_fact_client,0)
+            totales_map = list(map(lambda invoice: invoice["total"], total_fact_client))
             
-            suma = reduce(lambda total, invoice: round(total+ invoice["total"],2), 
-            invoices,0)
-            totales_map = list(map(lambda invoice: invoice["total"], invoices))
-            total_client = list(filter(lambda invoice: invoice["cliente"] == "Dayanna Vera", invoices))
 
             max_invoice = max(totales_map)
             min_invoice = min(totales_map)
             tot_invoices = sum(totales_map)
-            print("filter cliente: ",total_client)
-            print(f"map Facturas:{totales_map}")
-            print(f"              max Factura:{max_invoice}")
-            print(f"              min Factura:{min_invoice}")
-            print(f"              sum Factura:{tot_invoices}")
-            print(f"              reduce Facturas:{suma}")
-            x=input("presione una tecla para continuar...")    
+            fila += 12
+            gotoxy(33,fila-2);print(f'{cyan_color}NO.              Fecha              Total{reset_color}')
+            for fac in total_fact_client:
+                gotoxy(33,fila);print(f"{purple_color}{fac['factura']}            {fac['Fecha']}            {fac['total']}{reset_color}")
+                fila += 1
+            fila += 1
+            gotoxy(2,fila);print(f"{green_color}*{'*'*100}*{reset_color}")  
+            gotoxy(5,fila+1);print(f"{cyan_color} map Facturas: {reset_color}{totales_map}")
+            gotoxy(5,fila+3);print(f"{cyan_color} max Factura: {reset_color}{max_invoice}")
+            gotoxy(5,fila+5);print(f"{cyan_color} min Factura: {reset_color}{min_invoice}")
+            gotoxy(5,fila+7);print(f"{cyan_color} sum Factura: {reset_color}{tot_invoices}")
+            gotoxy(5,fila+9);print(f"{cyan_color} reduce Facturas: {reset_color}{suma}")
+            
+            marco_inferior(content_width, content_height+fila+10)  
+            gotoxy(10,fila+10);x=input(red_color+"presione una tecla para continuar..."+reset_color) 
+             
+        else: 
+            gotoxy(80,5);print(' '*21)   
+            total_fac = len(invoices)
+            fila = 8
+            marco_lateral(content_width, total_fac+fila)
+            mensaje(content_width, fila-4, "Factura no existe!!")
+            suma = reduce(lambda total, invoice: round(total+ invoice["total"],2), invoices,0)
+            totales_map = list(map(lambda invoice: invoice["total"], invoices))
+
+            max_invoice = max(totales_map)
+            min_invoice = min(totales_map)
+            tot_invoices = round(sum(totales_map), 2)
+            
+            gotoxy(33,fila-2);print(f'{cyan_color}NO.              Fecha              Total{reset_color}')
+            for fac in invoices:
+                gotoxy(33,fila);print(f"{purple_color}{fac['factura']}               {fac['Fecha']}            {fac['total']}{reset_color}")
+                fila += 1
+            
+            gotoxy(2,fila);print(f"{green_color}*{'*'*100}*{reset_color}")  
+            gotoxy(5,fila+1);print(f"{cyan_color} map Facturas: {reset_color}{totales_map}")
+            gotoxy(5,fila+3);print(f"{cyan_color} max Factura: {reset_color}{max_invoice}")
+            gotoxy(5,fila+5);print(f"{cyan_color} min Factura: {reset_color}{min_invoice}")
+            gotoxy(5,fila+7);print(f"{cyan_color} sum Factura: {reset_color}{tot_invoices}")
+            gotoxy(5,fila+9);print(f"{cyan_color} reduce Facturas: {reset_color}{suma}")
+            
+            fila += 10
+            marco_inferior(content_width, content_height+total_fac)
+            
+            gotoxy(20,fila+2);x=input(red_color+"presione una tecla para continuar..."+reset_color)
             self.consult()
 
 
@@ -732,14 +1061,14 @@ class CrudSales(ICrud):
 opc=''
 while opc !='4':  
     borrarPantalla()      
-    menu_main = Menu("Menu Facturacion",["1) Clientes","2) Productos","3) Ventas","4) Salir"],20,10)
+    menu_main = Menu("Menu Facturacion",["Clientes","Productos","Ventas","Salir"],50,10)
     opc = menu_main.menu()
     if opc == "1":
         opc1 = ''
         while opc1 !='5':
             borrarPantalla()    
             clients = CrudClients()
-            menu_clients = Menu("Menu Cientes",["1) Ingresar","2) Actualizar","3) Eliminar","4) Consultar","5) Salir"],20,10)
+            menu_clients = Menu("Menu Cientes",["Ingresar","Actualizar","Eliminar","Consultar","Salir"],50,10)
             opc1 = menu_clients.menu()
             if opc1 == "1":
                 clients.create()
@@ -758,7 +1087,7 @@ while opc !='4':
         while opc2 !='5':
             borrarPantalla()    
             product = CrudProducts()
-            menu_products = Menu("Menu Productos",["1) Ingresar","2) Actualizar","3) Eliminar","4) Consultar","5) Salir"],20,10)
+            menu_products = Menu("Menu Productos",["Ingresar","Actualizar","Eliminar","Consultar","Salir"],50,10)
             opc2 = menu_products.menu()
             if opc2 == "1":
                 product.create()
@@ -777,7 +1106,7 @@ while opc !='4':
         while opc3 !='5':
             borrarPantalla()
             sales = CrudSales()
-            menu_sales = Menu("Menu Ventas",["1) Registro Venta","2) Modificar","3) Eliminar","4) Consultar","5) Salir"],20,10)
+            menu_sales = Menu("Menu Ventas",["Registro Venta","Modificar","Eliminar","Consultar","Salir"],50,10)
             opc3 = menu_sales.menu()
             if opc3 == "1":
                 sales.create()

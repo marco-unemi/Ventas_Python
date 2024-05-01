@@ -1,16 +1,20 @@
 from abc import ABC, abstractmethod
 
+
 class ICrud(ABC):
- 
-    @abstractmethod    
+
+    @abstractmethod
     def create():
         pass
-    @abstractmethod   
+
+    @abstractmethod
     def update():
         pass
-    @abstractmethod 
+
+    @abstractmethod
     def delete():
         pass
-    @abstractmethod 
+
+    @abstractmethod
     def consult():
         pass
