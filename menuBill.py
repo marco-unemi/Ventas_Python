@@ -1,6 +1,6 @@
 from components import Menu,Valida
 from utilities import borrarPantalla, gotoxy, marco_lateral, mensaje, confirmacion, marco_inferior
-from utilities import reset_color,red_color,green_color,yellow_color,blue_color,purple_color,cyan_color,black_color, white_color
+from utilities import reset_color,red_color,green_color,yellow_color,blue_color,purple_color,cyan_color, white_color
 from clsJson import JsonFile
 from company  import Company
 from customer import RegularClient, VipClient
@@ -710,10 +710,9 @@ class CrudSales(ICrud):
         gotoxy(2,2);print(f"{green_color}*{reset_color}{' '*41}{cyan_color}NEW SALES REGISTER{reset_color}{' '*41}{green_color}*{reset_color}") 
         gotoxy(2,3);print(green_color+"*"*102+reset_color) 
         content_width = 100
-        content_height = 20
+        content_height = 24
         marco_lateral(content_width, content_height)
-        marco_inferior(content_width, content_height)
-        
+        marco_inferior(content_width, content_height + 1)
         company = Company()
         gotoxy(3,4);print('-'*100)
         gotoxy(20,5);print(f'{cyan_color}Empresa:{reset_color} {white_color}{company.business_name}{reset_color}')
@@ -722,11 +721,6 @@ class CrudSales(ICrud):
         gotoxy(20,7);print(f"{cyan_color}Factura#:{reset_color} {white_color}F0999999{reset_color}")
         gotoxy(60,7);print(f"{cyan_color}Fecha:{reset_color} {white_color}{datetime.datetime.now()}{reset_color}")
         gotoxy(3,8);print('-'*100)
-        
-        gotoxy(66,20);print("Subtotal:")
-        gotoxy(66,21);print("Decuento:")
-        gotoxy(66,22);print("Iva     :")
-        gotoxy(66,23);print("Total   :")
         
         gotoxy(80,9);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
         
@@ -739,10 +733,10 @@ class CrudSales(ICrud):
                 print("          ------>< | {}".format("La cédula no es válida."))
                 time.sleep(2) 
                 gotoxy(20,9)
-                print(' '*44)
+                print(' '*56)
         
         if dni == '0':
-            gotoxy(15,9);print(f"{red_color} Regresando al menu Productos... {reset_color}")
+            gotoxy(15,12);print(f"{red_color} Regresando al menu Productos... {reset_color}")
             time.sleep(2)
         else:
             gotoxy(80,9);print(' '*21)
@@ -767,8 +761,9 @@ class CrudSales(ICrud):
             # detalle de la venta
             follow ="s"
             line=1
+            
             while follow.lower()=="s":
-                gotoxy(7,12+line);print(line)
+                gotoxy(7,12+line);print(f'{white_color}{line}')
                 gotoxy(15,12+line);
                 id=int(validar.solo_numeros("Error: Solo numeros",15,12+line))
                 json_file = JsonFile(path+'/archivos/products.json')
@@ -785,15 +780,30 @@ class CrudSales(ICrud):
                     gotoxy(58,12+line);qyt=int(validar.solo_numeros("Error:Solo numeros",58,12+line))
                     gotoxy(70,12+line);print(product.preci*qyt)
                     sale.add_detail(product,qyt)
-                    gotoxy(76,20);print(round(sale.subtotal,2))
-                    gotoxy(76,21);print(round(sale.discount,2))
-                    gotoxy(76,22);print(round(sale.iva,2))
-                    gotoxy(76,23);print(round(sale.total,2))
+                    gotoxy(3,14+line-1);print(" "*100)
+                    
+                    gotoxy(66,15+line-1);print(' '*20)
+                    gotoxy(66,16+line-1);print(' '*20)
+                    gotoxy(66,17+line-1);print(' '*20)
+                    gotoxy(66,18+line-1);print(' '*20)
+                    
+                    gotoxy(3,14+line);print("-"*100)
+                    
+                    gotoxy(70,15+line);print(f"{blue_color}Subtotal: {white_color}{round(sale.subtotal,2)}{reset_color}")
+                    gotoxy(70,16+line);print(f"{blue_color}Decuento: {white_color}{round(sale.discount,2)}{reset_color}")
+                    gotoxy(70,17+line);print(f"{blue_color}Iva     : {white_color}{round(sale.iva,2)}{reset_color}")
+                    gotoxy(70,18+line);print(f"{blue_color}Total   : {white_color}{round(sale.total,2)}{reset_color}")
+                    gotoxy(3,20+line);print("-"*100)
+                    gotoxy(3,20+line-1);print(' '*100)
+                    gotoxy(3, content_height+4+line-1);print(' '*100)
+                    marco_inferior(content_width, content_height + line)
+
                     gotoxy(90,12+line);follow=input() or "s"  
                     gotoxy(90,12+line);print(green_color+"✔"+reset_color)  
                     line += 1
-            gotoxy(15,12+line);print(red_color+"Esta seguro de grabar la venta(s/n):")
-            gotoxy(54,12+line);procesar = input().lower()
+                    
+            procesar = confirmacion(content_width, 21+line, "Esta seguro de grabar la venta(s/n):")
+
             if procesar == "s":
                 json_file = JsonFile(path+'/archivos/invoices.json')
                 invoices = json_file.read()
@@ -802,17 +812,27 @@ class CrudSales(ICrud):
                 data["factura"]=ult_invoices
                 invoices.append(data)
                 json_file.save(invoices)
-                gotoxy(15,10+line);print(yellow_color+"😊 Venta Grabada satisfactoriamente 😊"+reset_color)
+                mensaje(content_width, 24+line, "😊 Venta Grabada satisfactoriamente 😊")
             else:
-                gotoxy(20,10+line);print(red_color+"🤣 Venta Cancelada 🤣"+reset_color)    
+                mensaje(content_width, 24+line, "🤣 Venta Cancelada 🤣")
             time.sleep(2)    
     
     def update(self):
-        print('\033c', end='')
-        gotoxy(2,1);print(green_color+"█"*90)
-        gotoxy(2,2);print("██"+" "*34+"Editar Factura"+" "*38+"██" +reset_color)
+        validar = Valida()
+        borrarPantalla()
+        print('\033c', end='')        
+        gotoxy(2,1);print(green_color+"*"*102+reset_color)
+        gotoxy(2,2);print(f"{green_color}*{reset_color}{' '*44}{cyan_color}DELETE SALES{reset_color}{' '*44}{green_color}*{reset_color}") 
+        gotoxy(2,3);print(green_color+"*"*102+reset_color) 
+        content_width = 100
+        content_height = 25
+        marco_lateral(content_width, content_height)
+        marco_inferior(content_width, content_height)
+        
         gotoxy(65,4);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
-        gotoxy(6,4);id_fact = int(input(purple_color+'Ingrese el numero de la factura: '+reset_color))
+        gotoxy(10,4);print(f'{purple_color}Ingrese el NO. de la Factura: {reset_color}')
+        id_fact = validar.solo_numeros("Error: Solo numeros", 40, 4)
+        
         json_file = JsonFile(path+'/archivos/invoices.json')       
         factura_a_modificar = json_file.find("factura", id_fact)
         
@@ -821,65 +841,97 @@ class CrudSales(ICrud):
             gotoxy(15,8);print(f"{red_color} Regresando al menu Productos... {reset_color}")
             time.sleep(2)
         elif factura_a_modificar:
-            gotoxy(65,4);print(' '*100)
+            gotoxy(65,4);print(' '*21)
             invoice = factura_a_modificar[0]  # Extrae la primera factura encontrada
             company = Company()
-            gotoxy(6,4);print('-'*100)
-            gotoxy(20,5);print(f'{cyan_color} Empresa: {reset_color} {company.business_name}')
-            gotoxy(60,5);print(f'{cyan_color} Ruc: {reset_color} {company.ruc}')
-            gotoxy(6,6);print('-'*100)
-            gotoxy(10,7);new_id = input(f"{cyan_color} Factura: #{reset_color}") or invoice['factura']
-            gotoxy(35,7);new_fecha = input(f"{cyan_color} Fecha: {reset_color}") or invoice['Fecha']
-            gotoxy(60,7);new_client = input(f"{cyan_color} Cliente: {reset_color}") or invoice['cliente']
-            gotoxy(6,8);print('-'*100)
-            gotoxy(10,9);print(f"{cyan_color} Detalle: {reset_color}")
+            gotoxy(3,6);print('-'*100)
+            gotoxy(20,7);print(f'{cyan_color} Empresa: {reset_color} {white_color}{company.business_name}{reset_color}')
+            gotoxy(60,7);print(f'{cyan_color} Ruc: {reset_color} {white_color}{company.ruc}{reset_color}')
+            gotoxy(3,8);print('-'*100)
             
-            fila = 10
+            gotoxy(10,9);new_id = input(f"{cyan_color} Factura: #{reset_color}") or invoice['factura']
+            gotoxy(35,9);new_fecha = input(f"{cyan_color} Fecha: {reset_color}") or invoice['Fecha']
+            gotoxy(60,9);new_client = input(f"{cyan_color} Cliente: {reset_color}") or invoice['cliente']
+            
+            gotoxy(3,10);print('-'*100)
+            gotoxy(10,11);print(f"{purple_color}Detalle: {reset_color}")
+            gotoxy(25,11);print(f"{cyan_color}Producto:{reset_color}")
+            gotoxy(55,11);print(f"{cyan_color}Precio:{reset_color}")
+            gotoxy(80,11);print(f"{cyan_color}Cantidad:{reset_color}")
+            
+            fila = 12
             for detail in invoice['detalle']:
-                gotoxy(20,fila);print(f'{cyan_color} Producto: {reset_color} {detail["producto"]}')
-                gotoxy(20+30,fila);print(f'{cyan_color} Precio: {reset_color} {detail["precio"]}')
-                gotoxy(20+55,fila);print(f'{cyan_color} Cantidad: {reset_color} {detail["cantidad"]}')
+                gotoxy(26,fila);print(f'{white_color}{detail["producto"]}{reset_color}')
+                gotoxy(56,fila);print(f'{white_color}{detail["precio"]}{reset_color}')
+                gotoxy(81,fila);print(f'{white_color}{detail["cantidad"]}{reset_color}')
                 fila += 1
                 
-            gotoxy(6,fila);print('-'*100)
-            gotoxy(60,fila+1);new_subtotal = input(f"{cyan_color} Subtotal:  {reset_color}") or invoice['subtotal']      
-            gotoxy(60,fila+2);new_descuento = input(f"{cyan_color} Descuento: {reset_color}") or invoice['descuento']     
-            gotoxy(60,fila+3);new_iva = input(f"{cyan_color} IVA:       {reset_color}") or invoice['iva']    
-            gotoxy(60,fila+4);new_total = input(f"{cyan_color} Total:     {reset_color}") or invoice['total']
-            gotoxy(6,fila+5);print('-'*100)
+            gotoxy(3,fila);print('-'*100)
+            gotoxy(60,fila+1);print(f"{cyan_color} Subtotal:  {reset_color} {white_color}{invoice['subtotal']}{reset_color}")      
+            gotoxy(60,fila+2);print(f"{cyan_color} Descuento: {reset_color} {white_color}{invoice['descuento']}{reset_color}")      
+            gotoxy(60,fila+3);print(f"{cyan_color} IVA:       {reset_color} {white_color}{invoice['iva']}{reset_color}")      
+            gotoxy(60,fila+4);print(f"{cyan_color} Total:     {reset_color} {white_color}{invoice['total']}{reset_color}")
+            gotoxy(3,fila+5);print('-'*100)
+            
+            
+            gotoxy(3,29);print(' '*100)
+            for i in range(content_height, fila+14):
+                gotoxy(2,i);print(f"{green_color}*")
+                gotoxy(103,i);print(f"{green_color}*")
                 
-            gotoxy(10, fila+7);print(red_color+"¿Está seguro de Modificar la factura? (s/n): "+reset_color)
-            gotoxy(55, fila+7);procesar = input().lower()
-            gotoxy(57, fila+7);print(red_color+"✔"+reset_color)
+            marco_inferior(content_width, content_height+fila+12)
+            
+            procesar = confirmacion(content_width, fila+7, '¿Está seguro de ELIMINAR la factura? (s/n): ')
 
             if procesar == "s":
-                new_values = {'factura': int(new_id), 'Fecha': new_fecha, 'cliente': new_client, 'subtotal': float(new_subtotal), 'descuento': float(new_descuento), 'iva': float(new_iva), 'total': float(new_total)}
+                new_values = {'factura': int(new_id), 'Fecha': new_fecha, 'cliente': new_client}
                 json_file.update('factura', id_fact, new_values)
-                gotoxy(20,fila+9);print(yellow_color+"😊 Factura Modificada satisfactoriamente 😊"+reset_color)
+                mensaje(content_width, fila+9, '😊 Factura Modificada satisfactoriamente 😊')
             else:
-                gotoxy(20,fila+9);print(yellow_color+"Modificación Cancelada!!"+reset_color)
-                    
+                mensaje(content_width, fila+9, 'Modificación Cancelada!!')
             time.sleep(2)  
             
         else: 
-            gotoxy(65,4);print(' '*100)
-            gotoxy(6,6);print(yellow_color+"Factura no existe!!"+reset_color)
+            gotoxy(65,4);print(' '*21)
             invoices = json_file.read()
-            gotoxy(4,8);print('No. Facturas disponibles')
-                        
-            for fact in invoices:
-                gotoxy(6,fila);print(blue_color+ str(fact['factura'])+reset_color)
+            
+            mensaje(content_width, 6, "Factura no existe!!")
+            gotoxy(3,8);print('-'*100)
+            mensaje(content_width, 10, "Facturas disponibles")
+            
+            gotoxy(33,12);print(f'{cyan_color}NO.                Fecha              Total{reset_color}')
+            fila = 14
+            for fac in invoices:
+                gotoxy(33,fila);print(f"{purple_color}{fac['factura']}               {fac['Fecha']}            {fac['total']}{reset_color}")
                 fila += 1
-                        
-            gotoxy(4,fila+2);x=input(red_color+"presione una tecla para continuar..."+reset_color)
+                
+            gotoxy(3,29);print(' '*100)
+            for i in range(content_height, fila):
+                gotoxy(2,i);print(f"{green_color}*")
+                gotoxy(103,i);print(f"{green_color}*")
+                
+            marco_inferior(content_width, fila+2)
+                
+            gotoxy(3,fila+1);print('-'*100)
+            
+            gotoxy(20,fila+3);x=input(red_color+"presione una tecla para continuar..."+reset_color)
             self.update()
     
     def delete(self):
-        print('\033c', end='')
-        gotoxy(2,1);print(green_color+"█"*90)
-        gotoxy(2,2);print("██"+" "*34+"Eliminar Factura"+" "*35+"██" +reset_color)
+        validar = Valida()
+        borrarPantalla()
+        print('\033c', end='')        
+        gotoxy(2,1);print(green_color+"*"*102+reset_color)
+        gotoxy(2,2);print(f"{green_color}*{reset_color}{' '*44}{cyan_color}DELETE SALES{reset_color}{' '*44}{green_color}*{reset_color}") 
+        gotoxy(2,3);print(green_color+"*"*102+reset_color) 
+        content_width = 100
+        content_height = 25
+        marco_lateral(content_width, content_height)
+        marco_inferior(content_width, content_height)
+        
         gotoxy(65,4);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
-        gotoxy(2,4);id_fact = int(input(purple_color+'Ingrese el numero de la factura: '+reset_color))
+        gotoxy(10,4);print(f'{purple_color}Ingrese el NO. de la Factura: {reset_color}')
+        id_fact = validar.solo_numeros("Error: Solo numeros", 40, 4)
         json_file = JsonFile(path+'/archivos/invoices.json')
         
         data = json_file.read()
@@ -891,58 +943,73 @@ class CrudSales(ICrud):
             gotoxy(15,8);print(f"{red_color} Regresando al menu Productos... {reset_color}")
             time.sleep(2)
         elif factura_a_eliminar:
-            gotoxy(65,4);print(' '*100)
+            gotoxy(65,4);print(' '*21)
             invoice = factura_a_eliminar[0]  # Extrae la primera factura encontrada
             company = Company()
-            gotoxy(2,4);print('-'*100)
-            gotoxy(20,5);print(f'{cyan_color} Empresa: {reset_color} {company.business_name}')
-            gotoxy(60,5);print(f'{cyan_color} Ruc: {reset_color} {company.ruc}')
-            gotoxy(2,6);print('-'*100)
-            gotoxy(10,7);print(f"{cyan_color} Factura: #{reset_color} {invoice['factura']}")
-            gotoxy(35,7);print(f"{cyan_color} Fecha: {reset_color} {invoice['Fecha']}")
-            gotoxy(60,7);print(f"{cyan_color} Cliente: {reset_color} {invoice['cliente']}")
-            gotoxy(2,8);print('-'*100)
-            gotoxy(10,9);print(f"{cyan_color} Detalle: {reset_color}")
+            gotoxy(3,6);print('-'*100)
+            gotoxy(20,7);print(f'{cyan_color} Empresa: {reset_color} {white_color}{company.business_name}{reset_color}')
+            gotoxy(60,7);print(f'{cyan_color} Ruc: {reset_color} {white_color}{company.ruc}{reset_color}')
+            gotoxy(3,8);print('-'*100)
+            gotoxy(10,9);print(f"{cyan_color} Factura: #{reset_color} {white_color}{invoice['factura']}{reset_color}")
+            gotoxy(35,9);print(f"{cyan_color} Fecha: {reset_color} {white_color}{invoice['Fecha']}{reset_color}")
+            gotoxy(60,9);print(f"{cyan_color} Cliente: {reset_color} {white_color}{invoice['cliente']}{reset_color}")
+            gotoxy(3,10);print('-'*100)
+            gotoxy(10,11);print(f"{purple_color}Detalle: {reset_color}")
+            gotoxy(25,11);print(f"{cyan_color}Producto:{reset_color}")
+            gotoxy(55,11);print(f"{cyan_color}Precio:{reset_color}")
+            gotoxy(80,11);print(f"{cyan_color}Cantidad:{reset_color}")
             
-            fila = 10
+            fila = 12
             for detail in invoice['detalle']:
-                gotoxy(20,fila);print(f'{cyan_color} Producto: {reset_color} {detail["producto"]}')
-                gotoxy(20+30,fila);print(f'{cyan_color} Precio: {reset_color} {detail["precio"]}')
-                gotoxy(20+55,fila);print(f'{cyan_color} Cantidad: {reset_color} {detail["cantidad"]}')
+                gotoxy(26,fila);print(f'{white_color}{detail["producto"]}{reset_color}')
+                gotoxy(56,fila);print(f'{white_color}{detail["precio"]}{reset_color}')
+                gotoxy(81,fila);print(f'{white_color}{detail["cantidad"]}{reset_color}')
                 fila += 1
                 
-            gotoxy(2,fila);print('-'*100)
-            gotoxy(60,fila+1);print(f"{cyan_color} Subtotal:  {reset_color} {invoice['subtotal']}")      
-            gotoxy(60,fila+2);print(f"{cyan_color} Descuento: {reset_color} {invoice['descuento']}")      
-            gotoxy(60,fila+3);print(f"{cyan_color} IVA:       {reset_color} {invoice['iva']}")      
-            gotoxy(60,fila+4);print(f"{cyan_color} Total:     {reset_color} {invoice['total']}")
-            gotoxy(2,fila+5);print('-'*100)
+            gotoxy(3,fila);print('-'*100)
+            gotoxy(60,fila+1);print(f"{cyan_color} Subtotal:  {reset_color} {white_color}{invoice['subtotal']}{reset_color}")      
+            gotoxy(60,fila+2);print(f"{cyan_color} Descuento: {reset_color} {white_color}{invoice['descuento']}{reset_color}")      
+            gotoxy(60,fila+3);print(f"{cyan_color} IVA:       {reset_color} {white_color}{invoice['iva']}{reset_color}")      
+            gotoxy(60,fila+4);print(f"{cyan_color} Total:     {reset_color} {white_color}{invoice['total']}{reset_color}")
+            gotoxy(3,fila+5);print('-'*100)
                 
-                
-            gotoxy(10, fila+7);print(red_color+"¿Está seguro de ELIMINAR la factura? (s/n): "+reset_color)
-            gotoxy(54, fila+7);procesar = input().lower()
-            gotoxy(56, fila+7);print(red_color+"✔"+reset_color)
+            long = len(invoice['detalle'])
+            gotoxy(3,29);print(' '*100)
+            marco_inferior(content_width, content_height+long)
+            
+            procesar = confirmacion(content_width, fila+7, '¿Está seguro de ELIMINAR la factura? (s/n): ')
 
             if procesar == "s":
                 data.remove(invoice)
                 json_file.save(data)
-                gotoxy(20,fila+9);print(yellow_color+"😊 Factura Eliminada satisfactoriamente 😊"+reset_color)
+                mensaje(content_width, fila+9, '😊 Factura Eliminada satisfactoriamente 😊')
             else:
-                gotoxy(20,fila+9);print(yellow_color+"Eliminación Cancelada!!"+reset_color)
-                    
+                mensaje(content_width, fila+9, 'Eliminación Cancelada!!')
             time.sleep(2)  
             
         else: 
-            gotoxy(65,4);print(' '*100)
-            gotoxy(6,6);print(yellow_color+"Factura no existe!!"+reset_color)
+            gotoxy(65,4);print(' '*21)
             invoices = json_file.read()
-            gotoxy(4,8);print('No. Facturas disponibles')
-                        
-            for fact in invoices:
-                gotoxy(6,fila);print(blue_color+ str(fact['factura'])+reset_color)
+            gotoxy(3,29);print(' '*100)
+            mensaje(content_width, 6, "Factura no existe!!")
+            gotoxy(3,8);print('-'*100)
+            mensaje(content_width, 10, "Facturas disponibles")
+            
+            gotoxy(33,12);print(f'{cyan_color}NO.                Fecha              Total{reset_color}')
+            fila = 14
+            for fac in invoices:
+                gotoxy(33,fila);print(f"{purple_color}{fac['factura']}               {fac['Fecha']}            {fac['total']}{reset_color}")
                 fila += 1
-                        
-            gotoxy(4,fila+2);x=input(red_color+"presione una tecla para continuar..."+reset_color)
+                
+            for i in range(content_height, fila):
+                gotoxy(2,i);print(f"{green_color}*")
+                gotoxy(103,i);print(f"{green_color}*")
+                
+            marco_inferior(content_width, fila+2)
+                
+            gotoxy(3,fila+1);print('-'*100)
+            
+            gotoxy(20,fila+3);x=input(red_color+"presione una tecla para continuar..."+reset_color)
             self.delete()
     
     def consult(self):        
@@ -952,8 +1019,9 @@ class CrudSales(ICrud):
         gotoxy(2,2);print(f"*{' '*41}{cyan_color}CONSULTA DE VENTA{reset_color}{' '*42}{green_color}*{reset_color}")
         gotoxy(2,3);print(f"{green_color}*{'*'*100}*{reset_color}")  
         content_width = 100
-        content_height = 38
+        content_height = 25
         marco_lateral(content_width, content_height)
+        marco_inferior(content_width, content_height)
         
         gotoxy(80,4);print(f'{red_color}Ingrese 0 para salir.{reset_color}')
         gotoxy(10,4);print(purple_color+"Ingrese el NO. de la Factura: "+reset_color)
@@ -969,68 +1037,81 @@ class CrudSales(ICrud):
             time.sleep(2)
         elif invoice:
             gotoxy(80,4);print(' '*21)
+            gotoxy(3,29);print(' '*100) 
             gotoxy(2,5);print(f"{green_color}*{'*'*100}*{reset_color}")
             invoice = invoice[0]
             company = Company()
-            mensaje(content_width, 6, f"Invoice #{invoice['factura']}", white_color)
-            gotoxy(3,7);print('-'*100)
-            gotoxy(20,8);print(f'{cyan_color} Empresa: {reset_color} {company.business_name}')
-            gotoxy(60,8);print(f'{cyan_color} Ruc: {reset_color} {company.ruc}')
-            gotoxy(3,9);print('-'*100)
-            gotoxy(10,10);print(f"{cyan_color} Factura: #{reset_color} {invoice['factura']}")
-            gotoxy(35,10);print(f"{cyan_color} Fecha: {reset_color} {invoice['Fecha']}")
-            gotoxy(60,10);print(f"{cyan_color} Cliente: {reset_color} {invoice['cliente']}")
-            gotoxy(3,11);print('-'*100)
-            gotoxy(10,12);print(f"{cyan_color} Detalle: {reset_color}")
-            
-            fila = 13
+            gotoxy(3,6);print('-'*100)
+            gotoxy(20,7);print(f'{cyan_color} Empresa: {reset_color} {white_color}{company.business_name}{reset_color}')
+            gotoxy(60,7);print(f'{cyan_color} Ruc: {reset_color} {white_color}{company.ruc}{reset_color}')
+            gotoxy(3,8);print('-'*100)
+            gotoxy(10,9);print(f"{cyan_color} Factura: #{reset_color} {white_color}{invoice['factura']}{reset_color}")
+            gotoxy(35,9);print(f"{cyan_color} Fecha: {reset_color} {white_color}{invoice['Fecha']}{reset_color}")
+            gotoxy(60,9);print(f"{cyan_color} Cliente: {reset_color} {white_color}{invoice['cliente']}{reset_color}")
+            gotoxy(3,10);print('-'*100)
+            gotoxy(10,11);print(f"{purple_color}Detalle: {reset_color}")
+            gotoxy(25,11);print(f"{cyan_color}Producto:{reset_color}")
+            gotoxy(55,11);print(f"{cyan_color}Precio:{reset_color}")
+            gotoxy(80,11);print(f"{cyan_color}Cantidad:{reset_color}")
+                
+            fila = 1
             for detail in invoice['detalle']:
-                gotoxy(20,fila);print(f'{cyan_color} Producto: {reset_color} {detail["producto"]}')
-                gotoxy(20+30,fila);print(f'{cyan_color} Precio: {reset_color} {detail["precio"]}')
-                gotoxy(20+55,fila);print(f'{cyan_color} Cantidad: {reset_color} {detail["cantidad"]}')
+                gotoxy(26,11+fila);print(f'{white_color}{detail["producto"]}{reset_color}')
+                gotoxy(56,11+fila);print(f'{white_color}{detail["precio"]}{reset_color}')
+                gotoxy(81,11+fila);print(f'{white_color}{detail["cantidad"]}{reset_color}')
                 fila += 1
                 
-            gotoxy(3,fila);print('-'*100)
-            gotoxy(60,fila+1);print(f"{cyan_color} Subtotal:  {reset_color} {invoice['subtotal']}")      
-            gotoxy(60,fila+2);print(f"{cyan_color} Descuento: {reset_color} {invoice['descuento']}")      
-            gotoxy(60,fila+3);print(f"{cyan_color} IVA:       {reset_color} {invoice['iva']}")      
-            gotoxy(60,fila+4);print(f"{cyan_color} Total:     {reset_color} {invoice['total']}")
-            gotoxy(3,fila+5);print('-'*100)
-            gotoxy(2,fila+6);print(f"{green_color}*{'*'*100}*{reset_color}")
+            gotoxy(3,12+fila);print('-'*100)
+            gotoxy(60,13+fila);print(f"{cyan_color} Subtotal:  {reset_color} {white_color}{invoice['subtotal']}{reset_color}")      
+            gotoxy(60,14+fila);print(f"{cyan_color} Descuento: {reset_color} {white_color}{invoice['descuento']}{reset_color}")      
+            gotoxy(60,15+fila);print(f"{cyan_color} IVA:       {reset_color} {white_color}{invoice['iva']}{reset_color}")      
+            gotoxy(60,16+fila);print(f"{cyan_color} Total:     {reset_color} {white_color}{invoice['total']}{reset_color}")
+            gotoxy(3,17+fila);print('-'*100)
+            gotoxy(2,18+fila);print(f"{green_color}*{'*'*100}*{reset_color}")
+            
             # Obtener el cliente de la factura consultada
             cliente_factura = invoice['cliente']
-            mensaje(content_width+10, fila+7, f'Facturas del cliente: {white_color}{cliente_factura}{reset_color}')
+            mensaje(content_width+10, 20+fila, f'Facturas del cliente: {white_color}{cliente_factura}{reset_color}')
                 
             total_fact_client = list(filter(lambda facturas_cliente: facturas_cliente['cliente'] == invoice['cliente'], invoices))
             suma = reduce(lambda total, invoice: round(total+ invoice["total"],2), total_fact_client,0)
             totales_map = list(map(lambda invoice: invoice["total"], total_fact_client))
-            
-
             max_invoice = max(totales_map)
             min_invoice = min(totales_map)
             tot_invoices = sum(totales_map)
-            fila += 12
-            gotoxy(33,fila-2);print(f'{cyan_color}NO.              Fecha              Total{reset_color}')
-            for fac in total_fact_client:
-                gotoxy(33,fila);print(f"{purple_color}{fac['factura']}            {fac['Fecha']}            {fac['total']}{reset_color}")
-                fila += 1
-            fila += 1
-            gotoxy(2,fila);print(f"{green_color}*{'*'*100}*{reset_color}")  
-            gotoxy(5,fila+1);print(f"{cyan_color} map Facturas: {reset_color}{totales_map}")
-            gotoxy(5,fila+3);print(f"{cyan_color} max Factura: {reset_color}{max_invoice}")
-            gotoxy(5,fila+5);print(f"{cyan_color} min Factura: {reset_color}{min_invoice}")
-            gotoxy(5,fila+7);print(f"{cyan_color} sum Factura: {reset_color}{tot_invoices}")
-            gotoxy(5,fila+9);print(f"{cyan_color} reduce Facturas: {reset_color}{suma}")
             
-            marco_inferior(content_width, content_height+fila+10)  
-            gotoxy(10,fila+10);x=input(red_color+"presione una tecla para continuar..."+reset_color) 
-             
+            gotoxy(3,21-fila);print('-'*100)
+            gotoxy(33,fila+22);print(f'{cyan_color}NO.{reset_color}')
+            gotoxy(50,fila+22);print(f'{cyan_color}Fecha{reset_color}')
+            gotoxy(69,fila+22);print(f'{cyan_color}Total{reset_color}')
+            gotoxy(3,21+fila);print('-'*100)
+            
+            for fac in total_fact_client:
+                gotoxy(33,fila+23);print(f"{purple_color}{fac['factura']}")
+                gotoxy(50,fila+23);print(f"{fac['Fecha']}")
+                gotoxy(69,fila+23);print(f"{fac['total']}{reset_color}")
+                fila += 1
+            gotoxy(3,24+fila);print('-'*100)
+
+            gotoxy(2,fila+25);print(f"{green_color}*{'*'*100}*{reset_color}")  
+            gotoxy(5,fila+26);print(f"{cyan_color} map Facturas: {reset_color}{totales_map}")
+            gotoxy(5,fila+28);print(f"{cyan_color} max Factura: {reset_color}{max_invoice}")
+            gotoxy(5,fila+30);print(f"{cyan_color} min Factura: {reset_color}{min_invoice}")
+            gotoxy(5,fila+32);print(f"{cyan_color} sum Factura: {reset_color}{tot_invoices}")
+            gotoxy(5,fila+34);print(f"{cyan_color} reduce Facturas: {reset_color}{suma}")
+            gotoxy(3,fila+35);print('-'*100)
+            
+            for i in range(content_height, fila+39):
+                gotoxy(2,i);print(f"{green_color}*")
+                gotoxy(103,i);print(f"{green_color}*")   
+                         
+            gotoxy(10,fila+37);x=input(red_color+"presione una tecla para continuar..."+reset_color) 
+
+            marco_inferior(content_width, fila+40)
         else: 
-            gotoxy(80,5);print(' '*21)   
-            total_fac = len(invoices)
-            fila = 8
-            marco_lateral(content_width, total_fac+fila)
-            mensaje(content_width, fila-4, "Factura no existe!!")
+            gotoxy(80,4);print(' '*21)  
+            gotoxy(3,29);print(' '*100)             
+            mensaje(content_width, 7, "Factura no existe!!")
             suma = reduce(lambda total, invoice: round(total+ invoice["total"],2), invoices,0)
             totales_map = list(map(lambda invoice: invoice["total"], invoices))
 
@@ -1038,22 +1119,34 @@ class CrudSales(ICrud):
             min_invoice = min(totales_map)
             tot_invoices = round(sum(totales_map), 2)
             
-            gotoxy(33,fila-2);print(f'{cyan_color}NO.              Fecha              Total{reset_color}')
+            gotoxy(3,9);print('-'*100)
+            gotoxy(33,10);print(f'{cyan_color}NO.{reset_color}')
+            gotoxy(50,10);print(f'{cyan_color}Fecha{reset_color}')
+            gotoxy(69,10);print(f'{cyan_color}Total{reset_color}')
+            gotoxy(3,11);print('-'*100)
+            
+            fila = 12
             for fac in invoices:
-                gotoxy(33,fila);print(f"{purple_color}{fac['factura']}               {fac['Fecha']}            {fac['total']}{reset_color}")
+                gotoxy(33,fila);print(f"{purple_color}{fac['factura']}")
+                gotoxy(50,fila);print(f"{fac['Fecha']}")
+                gotoxy(69,fila);print(f"{fac['total']}{reset_color}")
                 fila += 1
             
-            gotoxy(2,fila);print(f"{green_color}*{'*'*100}*{reset_color}")  
-            gotoxy(5,fila+1);print(f"{cyan_color} map Facturas: {reset_color}{totales_map}")
-            gotoxy(5,fila+3);print(f"{cyan_color} max Factura: {reset_color}{max_invoice}")
-            gotoxy(5,fila+5);print(f"{cyan_color} min Factura: {reset_color}{min_invoice}")
-            gotoxy(5,fila+7);print(f"{cyan_color} sum Factura: {reset_color}{tot_invoices}")
-            gotoxy(5,fila+9);print(f"{cyan_color} reduce Facturas: {reset_color}{suma}")
+            gotoxy(2,fila+1);print(f"{green_color}*{'*'*100}*{reset_color}")  
+            gotoxy(5,fila+3);print(f"{cyan_color} map Facturas: {reset_color}{totales_map}")
+            gotoxy(5,fila+5);print(f"{cyan_color} max Factura: {reset_color}{max_invoice}")
+            gotoxy(5,fila+7);print(f"{cyan_color} min Factura: {reset_color}{min_invoice}")
+            gotoxy(5,fila+9);print(f"{cyan_color} sum Factura: {reset_color}{tot_invoices}")
+            gotoxy(5,fila+11);print(f"{cyan_color} reduce Facturas: {reset_color}{suma}")
+            gotoxy(3,fila+12);print('-'*100)
             
-            fila += 10
-            marco_inferior(content_width, content_height+total_fac)
+            for i in range(content_height, fila+17):
+                gotoxy(2,i);print(f"{green_color}*")
+                gotoxy(103,i);print(f"{green_color}*")
+                
+            marco_inferior(content_width, fila+12)
             
-            gotoxy(20,fila+2);x=input(red_color+"presione una tecla para continuar..."+reset_color)
+            gotoxy(20,fila+14);x=input(red_color+"presione una tecla para continuar..."+reset_color)
             self.consult()
 
 

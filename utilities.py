@@ -3,7 +3,6 @@ import datetime
 import time
 
 # Variables globales: Colores en formato ANSI escape code
-black_color = "\033[90m"
 reset_color = "\033[0m"
 red_color = "\033[91m"
 green_color = "\033[92m"
@@ -48,8 +47,7 @@ def marco_lateral(content_width, content_height):
 def marco_inferior(content_width, content_height):
     frame_width = content_width + 2  
     frame_height = content_height + 4
-    gotoxy(2, frame_height)
-    print(green_color + "*" * frame_width + reset_color)
+    gotoxy(2, frame_height);print(green_color + "*" * frame_width + reset_color)
 
 
 def confirmacion(widht, height, msg):
@@ -65,5 +63,3 @@ def confirmacion(widht, height, msg):
     return procesar
 
 
-long = len(f'{cyan_color}Empresa:{reset_color} 0857565667001{" "*20}{cyan_color}Ruc:{reset_color} SuperMaxi')
-print(100-long)

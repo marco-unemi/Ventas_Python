@@ -9,14 +9,13 @@ nums = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 numeros = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 numeros[0] = 2
 numeros.append(20)
-numeros[len(numeros)-1] = 30
+numeros[len(numeros)-1] = 30  # numeros[-1]=30
 # Presentar solo los números pares utilizando un bucle for
-# inicio=time.time()
+inicio = time.time()
 # print(f"Inicio Recorrido: {inicio}")
-# for numero in numeros:
+# for numero in range(10000):
 #     if numero % 2 == 0:
 #         print(numero)
-
 # print(f"Fin Recorrido: {time.time()-inicio}")
 # print("Recorrido con bucle for con enumerate:")
 # for indice,numero in enumerate(numeros):
@@ -101,7 +100,6 @@ def sumar(x, y):
 
 
 def suma(x, y): return x + y
-
 # print(suma(2,5))
 # print((lambda x, y: x + y)(2,5))
 # es_par = lambda x: x % 2 == 0
@@ -122,9 +120,7 @@ def funcion_padre():
     def funcion_hija():
         print("Soy una función dentro de otra función")
     funcion_hija()
-
-
-funcion_padre()
+# funcion_padre()
 
 # Ejemplo de función como parámetro:
 
@@ -135,38 +131,47 @@ def funcion_principal(funcion, x, y):
 
 
 def exponente(x, y): return x**y
+# funcion_principal(exponente,5,3)
 
 
 # funciones de orden superior
 # Ejemplo 1: Elevar al cuadrado todos los elementos de una lista
 numeros = [1, 2, 3, 4, 5]
-cuadrados = map(lambda x: x ** 2, numeros)
-print(list(cuadrados))  # Output: [1, 4, 9, 16, 25]
+cuadrados = list(map(lambda x: x ** 2, numeros))
+datosmap = []
+def resp(x): return x ** 2
+
+
+for x in numeros:
+    res = resp(x)
+    datosmap.append(res)
+
+# print(cuadrados,datosmap)  # Output: [1, 4, 9, 16, 25]
 
 # Ejemplo 2: Convertir cadenas a mayúsculas
 palabras = ['hola', 'mundo', 'python']
 mayusculas = map(str.upper, palabras)
-print(list(mayusculas))  # Output: ['HOLA', 'MUNDO', 'PYTHON']
+# print(list(mayusculas))  # Output: ['HOLA', 'MUNDO', 'PYTHON']
 
 # Ejemplo 1: Filtrar números impares de una lista
 numeros = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 impares = filter(lambda x: x % 2 != 0, numeros)
-print(list(impares))  # Output: [1, 3, 5, 7, 9]
+# print(list(impares))  # Output: [1, 3, 5, 7, 9]
 
 # Ejemplo 2: Filtrar palabras que comienzan con 'a'
 palabras = ['apple', 'banana', 'avocado', 'orange']
 comienza_con_a = filter(lambda palabra: palabra.startswith('a'), palabras)
-print(list(comienza_con_a))  # Output: ['apple', 'avocado']
+# print(list(comienza_con_a))  # Output: ['apple', 'avocado']
 
 # Ejemplo 1: Sumar todos los elementos de una lista
 numeros = [1, 2, 3, 4, 5]
-suma = reduce(lambda x, y: x + y, numeros, 30)
-print(suma)  # Output: 15
+suma = reduce(lambda x, y: x + y, numeros, 0)
+# print(suma)  # Output: 15
 
 # Ejemplo 2: Calcular el producto de todos los elementos de una lista
 numeros = [2, 3, 4]
 producto = reduce(lambda x, y: x * y, numeros)
-print(producto)  # Output: 24
+# print(producto)  # Output: 24
 
 # funcion_principal(exponente,5,3)
 
@@ -182,11 +187,12 @@ print(producto)  # Output: 24
 # Aquí hay tres ejemplos de comprehension en Python:
 
 # Ejemplo 1: Crear una lista de los cuadrados de los números del 1 al 10
-# cuadrados = [x**2 for x in range(1,11) if x % 2 ==0 ] # (1,2,3,4,5,6,7,8,9,10)
+cuadrados = [x**2 for x in range(1, 11) if x %
+             2 == 0]  # (1,2,3,4,5,6,7,8,9,10)
 # cua=[]
 # for x in range(1,11):
 #    if x % 2 ==0:
-#      cua.append(x)
+#      cua.append(x**2)
 
 # # Ejemplo 2: Crear un conjunto de los números pares del 1 al 10
 # impares = tuple(x for x in range(1, 11) if x % 2 != 0)
@@ -228,18 +234,20 @@ print(producto)  # Output: 24
 # print(resultado)
 
 # argumentos           (1,2,3,8)  {"num1":4,"num2:5"}
-# def suma_con_args_kwargs(*args, **kwargs):
-#     suma = 0
-#     print(args)
-#     for arg in args:
-#         suma += arg
-#     for key, value in kwargs.items():
-#         suma += value
-#     print(kwargs)
-#     return suma
+def suma_con_args_kwargs(*args, **kwargs):
+    suma = 0
+    print(args)
+    for arg in args:
+        suma += arg
+    for key, value in kwargs.items():
+        suma += value
+    print(kwargs)
+    return suma
 
-# resultado = suma_con_args_kwargs(1, 2, 3,8, num1=3, num2=2)
+
+resultado = suma_con_args_kwargs(1, 2, 3, 8, num1=3, num2=2)
 # print(resultado)
+
 
 def decorador_division_cero(func):
     # Esta es la función wrapper que envuelve la función original
@@ -256,9 +264,7 @@ def decorador_division_cero(func):
 @decorador_division_cero
 def dividir(a, b):
     return a / b
-
-
-print(dividir(2, 2))
+# print(dividir(2,0))
 
 # decorador de clase
 
@@ -278,7 +284,7 @@ class MiClase:
 
 
 objeto = MiClase(10)
-print(objeto)
+# print(objeto)
 
 # Los mixins son clases que contienen métodos que puedes utilizar en otras clases para agregar funcionalidad adicional. Son útiles cuando deseas compartir funcionalidad común entre varias clases sin usar herencia múltiple, ya que Python no admite herencia múltiple directa.
 
@@ -309,8 +315,8 @@ class Coche(Vehiculo, ConducirMixin):
 # Crear instancias de Coche
 coche = Coche("Toyota", "Corolla")
 # Usar métodos de los mixins
-print(coche)
-print(coche.conducir())
+# print(coche)
+# print(coche.conducir())
 # clases dentro de otra clase
 
 
@@ -329,4 +335,46 @@ operacion = OperacionMatematica(10)
 # Crear una instancia de la clase Suma dentro de OperacionMatematica
 suma = operacion.Suma(operacion, 5)
 
-print(suma.resultado)  # Output: 15 (10 + 5)
+#
+# print(suma.resultado)  # Output: 15 (10 + 5)
+
+
+def imprimir_numeros(n):
+    if n == 0:
+        return
+    else:
+        print(n)
+        imprimir_numeros(n - 1)
+
+# Llamamos a la función con el número inicial
+# imprimir_numeros(10)
+
+# La recursividad es un concepto en programación donde una función se llama a sí misma para resolver un problema más grande.
+
+
+def imprimir_numeros(n):
+    if n == 0:
+        return
+    else:
+        print(n)
+        imprimir_numeros(n - 1)
+
+
+# Llamamos a la función con el número inicial
+# imprimir_numeros(10)
+fac, n = 1, 5
+while n > 0:
+    fac = fac * n
+    n = n - 1
+print("fac: ", fac)
+
+
+def factorial(n):
+    if n == 0:
+        return 1
+    else:
+        return n * factorial(n - 1)
+
+
+# Ejemplo de uso
+print("fac recursivo:", factorial(5))  # Output: 120

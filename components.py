@@ -1,4 +1,4 @@
-from utilities import borrarPantalla, gotoxy, reset_color,red_color,green_color,yellow_color,blue_color,purple_color,cyan_color,black_color, white_color
+from utilities import borrarPantalla, gotoxy, reset_color, red_color, green_color, yellow_color, blue_color, purple_color, cyan_color, white_color
 import time
 
 
@@ -28,39 +28,54 @@ class Menu:
             print(f'{purple_color}{i}){reset_color} {white_color}{opcion}{reset_color}')
             i += 1
         gotoxy(self.col+5, self.fil+2)
-        opc = input(f"{blue_color}Elija opcion[{purple_color}1...{len(self.opciones)}{purple_color}]: {reset_color}")
+        opc = input(f"{blue_color}Elija opcion[{purple_color}1...{len(self.opciones)}{purple_color}]: {white_color}{reset_color}")
         return opc
 
 
-class Valida:
-    def solo_numeros(self, mensaje, col, fil):
+def validar_decimales(func):
+    def wrapper(self, mensajeError, col, fil):
         while True:
             gotoxy(col, fil)
-            valor = input()
+            valor = str(input(white_color))
             try:
-                valor_entero = int(valor)
-                if valor_entero == 0:
-                    return valor_entero
-                elif valor_entero > 0:
-                    return valor_entero
+                valor = float(valor)
+                if valor > 0:
+                    return valor
                 else:
-                    gotoxy(col, fil)
-                    print("          ------><  | {} ".format(mensaje))
-                    time.sleep(1)
-                    gotoxy(col, fil)
-                    print(" "*41)
+                    raise ValueError
             except ValueError:
                 gotoxy(col, fil)
-                print("          ------><  | {} ".format(mensaje))
+                print("          ------><  | {} ".format(mensajeError))
                 time.sleep(1)
                 gotoxy(col, fil)
-                print(" "*41)
-            
+                print(" "*50)
+    return wrapper
+
+
+class Valida:
+    # funcion recursiva
+    def solo_numeros(self, mensaje, col, fil):
+        gotoxy(col, fil)
+        valor = input(white_color)
+        try:
+            valor_entero = int(valor)
+            if valor_entero == 0:
+                return valor_entero
+            elif valor_entero > 0:
+                return valor_entero
+            else:
+                print("          ------><  | Error: Solo números positivos")
+                time.sleep(1)
+                return self.solo_numeros(mensaje, col, fil)
+        except ValueError:
+            print("          ------><  | Error: Solo números enteros")
+            time.sleep(1)
+            return self.solo_numeros(mensaje, col, fil)
 
     def solo_letras(self, mensajeError, col, fil):
         while True:
             gotoxy(col, fil)
-            valor = str(input().capitalize())
+            valor = str(input(white_color).capitalize())
             if valor.strip() == '0':  # Verificar si se ingresó '0'
                 return int(valor)  # Devolver '0' como cadena
             try:
@@ -75,31 +90,19 @@ class Valida:
                 gotoxy(col, fil)
                 print(" "*50)
         return valor
-    
-    
+
+    # decoradres
+    @validar_decimales
     def solo_decimales(self, mensajeError, col, fil):
-        while True:
-            gotoxy(col, fil)
-            valor = str(input())
-            try:
-                valor = float(valor)
-                if valor > float(0):
-                    break
-            except:
-                gotoxy(col, fil)
-                print("          ------><  | {} ".format(mensajeError))
-                time.sleep(1)
-                gotoxy(col, fil)
-                print(" "*50)
-        return valor
+        pass
 
     def verificar_cedula(self, cedula):
         if cedula == '0':
             return True
-        
+
         elif len(cedula) != 10:
             return False
-        
+
         coeficientes = [2, 1, 2, 1, 2, 1, 2, 1, 2]
         suma = 0
         for i in range(9):
@@ -108,16 +111,12 @@ class Valida:
             if resultado > 9:
                 resultado -= 9
             suma += resultado
-        
+
         verificador = 10 - (suma % 10)
         if verificador == 10:
             verificador = 0
-        
-        return verificador == int(cedula[9])
-    
-class otra:
-    pass
 
+        return verificador == int(cedula[9])
 
 
 # if __name__ == '__main__':

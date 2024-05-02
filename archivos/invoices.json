@@ -1,22 +1,6 @@
 [
     {
         "factura": 1,
-        "Fecha": "2024-04-30",
-        "cliente": "Kenia Pati\u00f1o",
-        "subtotal": 7.5,
-        "descuento": 0.75,
-        "iva": 0.81,
-        "total": 7.56,
-        "detalle": [
-            {
-                "producto": "Coca cola",
-                "precio": 1.5,
-                "cantidad": 5
-            }
-        ]
-    },
-    {
-        "factura": 2,
         "Fecha": "2024-05-01",
         "cliente": "Marco Arteaga",
         "subtotal": 13.0,
@@ -29,6 +13,69 @@
                 "precio": 1.5,
                 "cantidad": 3
             },
+            {
+                "producto": "Aceite",
+                "precio": 8.5,
+                "cantidad": 1
+            }
+        ]
+    },
+    {
+        "factura": 2,
+        "Fecha": "2024-05-01",
+        "cliente": "Marco Arteaga",
+        "subtotal": 53.5,
+        "descuento": 5.35,
+        "iva": 5.78,
+        "total": 53.93,
+        "detalle": [
+            {
+                "producto": "Aceite",
+                "precio": 8.5,
+                "cantidad": 1
+            },
+            {
+                "producto": "Coca cola",
+                "precio": 1.5,
+                "cantidad": 30
+            }
+        ]
+    },
+    {
+        "factura": 3,
+        "Fecha": "2024-05-01",
+        "cliente": "Marco Arteaga",
+        "subtotal": 44.0,
+        "descuento": 4.4,
+        "iva": 4.75,
+        "total": 44.35,
+        "detalle": [
+            {
+                "producto": "Coca cola",
+                "precio": 1.5,
+                "cantidad": 10
+            },
+            {
+                "producto": "Mortadela",
+                "precio": 2.0,
+                "cantidad": 6
+            },
+            {
+                "producto": "Aceite",
+                "precio": 8.5,
+                "cantidad": 2
+            }
+        ]
+    },
+    {
+        "factura": 4,
+        "Fecha": "2024-05-01",
+        "cliente": "Marco Moreira",
+        "subtotal": 8.5,
+        "descuento": 0.85,
+        "iva": 0.92,
+        "total": 8.57,
+        "detalle": [
             {
                 "producto": "Aceite",
                 "precio": 8.5,
